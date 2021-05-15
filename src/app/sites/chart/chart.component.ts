@@ -2,15 +2,12 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import {NgxEchartsModule} from 'ngx-echarts';
 import {EChartsOption} from 'echarts';
 
-// ...
-
-
 @Component({
   selector: 'app-basic-update',
-  templateUrl: './basic-update.component.html',
-  styleUrls: ['./basic-update.component.scss']
+  templateUrl: './chart.component.html',
+  styleUrls: ['./chart.component.scss']
 })
-export class BasicUpdateComponent implements OnInit, OnDestroy {
+export class ChartComponent implements OnInit, OnDestroy {
   options: any;
   updateOptions: any;
 
@@ -22,7 +19,20 @@ export class BasicUpdateComponent implements OnInit, OnDestroy {
 
   constructor() { }
 
-
+  chartOption: EChartsOption = {
+    xAxis: {
+      type: 'value',
+    },
+    yAxis: {
+      type: 'value',
+    },
+    series: [
+      {
+        data: [0, 932, 901, 934, 1290, 1330, 1320],
+        type: 'line',
+      },
+    ],
+  };
 
   ngOnInit(): void {
     // generate some random testing data:

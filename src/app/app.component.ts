@@ -14,22 +14,6 @@ export class AppComponent {
 // Get the <span> element that closes the modal
    span = document.getElementsByClassName('close')[0];
 
-  chartOption: EChartsOption = {
-    xAxis: {
-      type: 'category',
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [
-      {
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
-        type: 'line',
-      },
-    ],
-  };
-
 // When the user clicks on the button, open the modal
    openChart(): void {
      const modal = document.getElementById('chart');
