@@ -1,13 +1,17 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { RouterModule, Routes } from '@angular/router';
+
+
 // Pages
 import {ChartComponent} from './sites/chart/chart.component';
 import {DashboardComponent} from './sites/Dashboard/dashboard.component';
 import {DatenbestandComponent} from './sites/datenbestand/datenbestand.component';
 import {SettingsComponent} from './sites/settings/settings.component';
+import { ConfigComponent} from './config/config.component';
 
 const appRoutes: Routes = [
   {
@@ -21,6 +25,9 @@ const appRoutes: Routes = [
   },
   {
     path: 'data', component: DatenbestandComponent
+  },
+  {
+    path: 'config', component: ConfigComponent
   }
 ];
 @NgModule({
@@ -29,10 +36,12 @@ const appRoutes: Routes = [
     ChartComponent,
     DashboardComponent,
     DatenbestandComponent,
-    SettingsComponent
-  ],
+    SettingsComponent,
+    ConfigComponent
+    ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts'),
     }),

@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import {NgxEchartsModule} from 'ngx-echarts';
 import {EChartsOption} from 'echarts';
-
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import {ConfigComponent} from '../../config/config.component';
 @Component({
   selector: 'app-basic-update',
   templateUrl: './chart.component.html',
@@ -16,30 +18,15 @@ export class ChartComponent implements OnInit, OnDestroy {
   private value: number ;
   private data: any[];
   private timer: any;
-
+  private requestString: string;
+  private config: ConfigComponent;
   constructor() { }
-
-  chartOption: EChartsOption = {
-    xAxis: {
-      type: 'value',
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [
-      {
-        data: [0, 932, 901, 934, 1290, 1330, 1320],
-        type: 'line',
-      },
-    ],
-  };
 
   ngOnInit(): void {
     // generate some random testing data:
     this.data = [];
     this.now = new Date(1997, 9, 3);
     this.value = Math.random() * 1000;
-
     for (let i = 0; i < 1000; i++) {
       this.data.push(this.randomData());
     }
@@ -98,13 +85,13 @@ export class ChartComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy() {
     clearInterval(this.timer);
   }
 
   randomData() {
     this.now = new Date(this.now.getTime() + this.oneDay);
-    this.value = this.value + Math.random() * 21 - 10;
+    this.value = this.value + Math.random() * 30 - 10;
     return {
       name: this.now.toString(),
       value: [
