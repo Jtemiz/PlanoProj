@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
 })
 export class DashboardComponent {
   title = 'Dashboard';
-
+  x: any;
+  y: any;
 }

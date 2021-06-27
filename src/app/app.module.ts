@@ -4,6 +4,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { RouterModule, Routes } from '@angular/router';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
 
 // Pages
@@ -11,8 +13,9 @@ import {ChartComponent} from './sites/chart/chart.component';
 import {DashboardComponent} from './sites/Dashboard/dashboard.component';
 import {DatenbestandComponent} from './sites/datenbestand/datenbestand.component';
 import {SettingsComponent} from './sites/settings/settings.component';
-import { ConfigComponent} from './config/config.component';
-
+import {ConfigComponent} from './config/config.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+const config: SocketIoConfig = { url: 'http://localhost:5000', options: {} };
 const appRoutes: Routes = [
   {
     path: 'chart', component: ChartComponent,
@@ -40,6 +43,8 @@ const appRoutes: Routes = [
     ConfigComponent
     ],
   imports: [
+    FlexLayoutModule,
+    SocketIoModule.forRoot(config),
     BrowserModule,
     HttpClientModule,
     NgxEchartsModule.forRoot({
@@ -48,7 +53,8 @@ const appRoutes: Routes = [
     RouterModule.forRoot(
       appRoutes,
       { enableTracing: true } // <-- debugging purposes only
-    )
+    ),
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

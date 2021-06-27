@@ -1,0 +1,36 @@
+
+@media only screen and (min-width: 415px){
+  .button {
+    border: none;
+    color: white;
+    height: 250px;
+    width: 250px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 30px;
+    margin: 4px 2px;
+    cursor: auto;
+  }
+}
+
+@media only screen and (max-width: 415px) {
+  .button {
+    border: none;
+    color: white;
+    height: 100px;
+    width: 250px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 30px;
+    margin: 4px 2px;
+    cursor: auto;
+  }
+}
+
+#buttonStart:hover {
+  background-color: green;
+}
+
+#buttonStop:hover {
+  background-color: red;
+}

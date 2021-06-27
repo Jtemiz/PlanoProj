@@ -12,6 +12,13 @@
 </header>
 
 <div echarts [options]="options" [merge]="updateOptions" class="demo-chart"></div>
-
+<div>
+<button (click)="startMeasuring()" class="button" id="buttonStart"> Messung Starten </button>
+<button class="button" id="buttonStop"> Messung beenden </button>
+<h1>TestTest die Values sind
+  <li *ngFor="let value of values">
+</h1>
+</div>
 </body>
 </html>
+

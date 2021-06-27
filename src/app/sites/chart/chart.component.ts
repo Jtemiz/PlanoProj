@@ -1,40 +1,62 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {interval, Subscription} from 'rxjs';
 import {NgxEchartsModule} from 'ngx-echarts';
 import {EChartsOption} from 'echarts';
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {ConfigComponent} from '../../config/config.component';
+import {DBHandlerApiService} from '../../services/db-handler-api.service';
+import {Observable} from 'rxjs';
+import {Messwert} from '../../Messwert';
+
 @Component({
   selector: 'app-basic-update',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss']
 })
+
+
 export class ChartComponent implements OnInit, OnDestroy {
+  runningMeasuring = false;
+  subscription: Subscription;
   options: any;
   updateOptions: any;
-
+  dbHandler: DBHandlerApiService;
   private oneDay = 24 * 3600 * 1000;
   private now: Date;
-  private value: number ;
+  private value: number;
   private data: any[];
   private timer: any;
-  private requestString: string;
   private config: ConfigComponent;
-  constructor() { }
+  public values: number[];
+
+  constructor(dbHandler: DBHandlerApiService) {
+    this.dbHandler = dbHandler;
+  }
 
   ngOnInit(): void {
+
+    /**
+     * periodical run of getValues()-method
+     * Parameter period = interval of running method getValues()
+     */
+    const source = interval(2000000);
+    this.subscription = source.subscribe(val => { if (this.runningMeasuring == true) {
+      this.getValues();
+      console.log('Measuring running');
+    } });
     // generate some random testing data:
+
     this.data = [];
+    this.values = [];
     this.now = new Date(1997, 9, 3);
     this.value = Math.random() * 1000;
-    for (let i = 0; i < 1000; i++) {
-      this.data.push(this.randomData());
-    }
+    // this.data.push(this.dbHandler.getValues(0));
 
     // initialize chart options:
     this.options = {
       title: {
-        text: 'Dynamic Data + Time Axis'
+        text: 'Messwerte'
       },
       tooltip: {
         trigger: 'axis',
@@ -48,7 +70,7 @@ export class ChartComponent implements OnInit, OnDestroy {
         }
       },
       xAxis: {
-        type: 'time',
+        type: 'value',
         splitLine: {
           show: false
         }
@@ -71,9 +93,11 @@ export class ChartComponent implements OnInit, OnDestroy {
 
     // Mock dynamic data:
     this.timer = setInterval(() => {
-      for (let i = 0; i < 5; i++) {
-        this.data.shift();
-        this.data.push(this.randomData());
+      if (this.runningMeasuring){
+        for (let i = 0; i < 5; i++) {
+          this.data.shift();
+          this.data.push(this.getValues());
+      }
       }
 
       // update series data:
@@ -86,7 +110,30 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.subscription.unsubscribe();
     clearInterval(this.timer);
+  }
+
+  getValues() {
+    this.dbHandler.getNewValues().subscribe(data => {
+        console.log(data);
+        return data;
+    },
+      error => {
+      console.log(error);
+      });
+  }
+
+  startMeasuring() {
+   this.dbHandler.createTable();
+  // this.runningMeasuring = true;
+  // this.data = [];
+  // this.values = [];
+  }
+
+  /*
+convertDate() {
+    const position =
   }
 
   randomData() {
@@ -100,4 +147,7 @@ export class ChartComponent implements OnInit, OnDestroy {
       ]
     };
   }
+
+ */
+
 }
