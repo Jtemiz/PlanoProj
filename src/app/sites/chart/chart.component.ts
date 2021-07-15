@@ -1,14 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {interval, Subscription} from 'rxjs';
-import {NgxEchartsModule} from 'ngx-echarts';
-import {EChartsOption} from 'echarts';
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {ConfigComponent} from '../../config/config.component';
 import {DBHandlerApiService} from '../../services/db-handler-api.service';
-import {Observable} from 'rxjs';
-import {Messwert} from '../../Messwert';
-
 @Component({
   selector: 'app-basic-update',
   templateUrl: './chart.component.html',

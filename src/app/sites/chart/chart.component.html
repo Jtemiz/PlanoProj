@@ -6,19 +6,29 @@
 </head>
 <body>
 <header>
-  <a routerLink="" routerLinkActive="active">
-  <img height="200px" src="assets/logo.png">
-  </a>
+
 </header>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link" href="#">Home</a>
+      <a class="nav-item nav-link active" href="/chart">Messung<span class="sr-only">(current)</span></a>
+      <a class="nav-item nav-link" href="/data">Datenbestand</a>
+      <a class="nav-item nav-link" href="/settings">Einstellungen</a>
+    </div>
+  </div>
+</nav>
 
 <div echarts [options]="options" [merge]="updateOptions" class="demo-chart"></div>
 <div>
 <button (click)="startMeasuring()" class="button" id="buttonStart"> Messung Starten </button>
 <button class="button" id="buttonStop"> Messung beenden </button>
-<h1>TestTest die Values sind
-  <li *ngFor="let value of values">
-</h1>
 </div>
 </body>
+<app-dark-mode style="display: none"></app-dark-mode>
 </html>
 

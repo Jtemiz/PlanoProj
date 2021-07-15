@@ -1,0 +1,55 @@
+.toggle {
+  display: none;
+}
+
+.example-margin {
+  margin: 10px;
+}
+.example-h2 {
+  margin: 10px;
+}
+
+.example-section {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  height: 60px;
+}
+
+
+.toggle {
+  display: none;
+}
+
+.toggle-label {
+  position: relative;
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  overflow: hidden;
+}
+
+.sun,
+.moon {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: auto;
+  transition: top 0.3s;
+}
+
+.sun {
+  top: 0;
+}
+
+.moon {
+  top: -150%;
+}
+
+.toggle:checked + .toggle-label .sun {
+  top: 150%;
+}
+
+.toggle:checked + .toggle-label .moon {
+  top: 0;
+}

@@ -5,7 +5,6 @@ import { AppComponent } from './app.component';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { RouterModule, Routes } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
 
 // Pages
@@ -15,7 +14,8 @@ import {DatenbestandComponent} from './sites/datenbestand/datenbestand.component
 import {SettingsComponent} from './sites/settings/settings.component';
 import {ConfigComponent} from './config/config.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-const config: SocketIoConfig = { url: 'http://localhost:5000', options: {} };
+import { DarkModeComponent } from './services/dark-mode/dark-mode.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 const appRoutes: Routes = [
   {
     path: 'chart', component: ChartComponent,
@@ -40,11 +40,11 @@ const appRoutes: Routes = [
     DashboardComponent,
     DatenbestandComponent,
     SettingsComponent,
-    ConfigComponent
+    ConfigComponent,
+    DarkModeComponent
     ],
   imports: [
     FlexLayoutModule,
-    SocketIoModule.forRoot(config),
     BrowserModule,
     HttpClientModule,
     NgxEchartsModule.forRoot({
@@ -54,7 +54,8 @@ const appRoutes: Routes = [
       appRoutes,
       { enableTracing: true } // <-- debugging purposes only
     ),
-    NgbModule
+    NgbModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
