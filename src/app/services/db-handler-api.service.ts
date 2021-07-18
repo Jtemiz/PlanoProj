@@ -27,7 +27,6 @@ export class DBHandlerApiService {
       + ('0' + date.getHours()).slice(-2)
       + ('0' + date.getMinutes()).slice(-2);
     this.http.put<any>(this.apiURL + 'management', {tableName: tabN} ).subscribe(data => console.log("created new table: " + tabN + "; Return Value = " + data))
-    this.startArduino(tabN)
   }
 
   startArduino(tabN: string) {
