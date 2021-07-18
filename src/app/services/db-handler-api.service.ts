@@ -21,7 +21,7 @@ export class DBHandlerApiService {
 
   createTable() {
     const date = new Date(Date.now());
-    const tabN = date.getFullYear()
+    const tabN: string = date.getFullYear()
       + ('0' + (date.getMonth() + 1)).slice(-2)
       + ('0' + date.getDate()).slice(-2)
       + ('0' + date.getHours()).slice(-2)
