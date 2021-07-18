@@ -16,6 +16,7 @@ import {ConfigComponent} from './config/config.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DarkModeComponent } from './services/dark-mode/dark-mode.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {DARK_MODE_OPTIONS} from 'angular-dark-mode';
 const appRoutes: Routes = [
   {
     path: 'chart', component: ChartComponent,
@@ -57,7 +58,13 @@ const appRoutes: Routes = [
     NgbModule,
     BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [
+    {
+    provide: DARK_MODE_OPTIONS,
+    useValue: {
+      element: document.body
+    }
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

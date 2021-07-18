@@ -25,7 +25,7 @@ mysql_connection_pool = PersistentDB(
 # arg parser to define needed/required args with datatype etc
 parser = reqparse.RequestParser()
 parser.add_argument('kommentar', required=True, help='argument required')
-parser.add_argument('position', type=int, required=True, help='argument required')
+parser.add_argument('position', type=int, required=False, help='argument required')
 
 parser2 = reqparse.RequestParser()
 parser2.add_argument('tableName', type=int, required=True, help='argument required')
@@ -77,17 +77,31 @@ class SimpleApi2(Resource):
       result = cursor.fetchall()
       cursor.close()
       cnx.close()
+
+      return args['tableName'], 200
+    except Exception as ex:
+      print(ex)
+      return "Database connection failed", 400
+
+  def get(self):
+    try:
+      cnx = mysql_connection_pool.connection()
+      cursor = cnx.cursor()
+      sql = "SHOW TABLES FROM MESSDATEN"
+      cursor.execute(sql,)
+      result = cursor.fetchall()
+      cursor.close()
+      cnx.close()
+      print(result)
       return result, 200
     except Exception as ex:
       print(ex)
-      return "DAS IST FALSCH", 400
+      return 400
 
 # this adds our resources to the api
 # we define what resource we want to add and which path we would like to use
 api.add_resource(SimpleApi, '/', '/<int:lastPosition>')
 api.add_resource(SimpleApi2, '/management')
-
-
 
 
 

@@ -4,39 +4,14 @@
     <meta charset="UTF-8">
     <title>APS-Dashboard</title>
 </head>
-<body fxFlex="90%" style="position: center">
-<header>
-
-
-</header>
+<body fxFlex="90%" style="position: center; background: none">
+<header></header>
 <div style="max-width: 960px; margin: auto;">
   <a routerLink="/chart" routerLinkActive="active" ><button id="button1" class="button"> Neue Messung </button> </a>
   <a routerLink="/data"> <button id="button2" class="button"> Datenbestand </button></a>
   <a routerLink="/settings"> <button id="button3" class="button"> Settings </button></a>
 </div>
-
-<div ng-app="myApp" ng-controller="customersCtrl">
-
-  <table>
-    <tr ng-repeat="x in names">
-      <td>{{ x.Name }}</td>
-      <td>{{ x.Country }}</td>
-    </tr>
-  </table>
-
-</div>
-
-
 </body>
 </html>
 
 <app-dark-mode style="display: none"></app-dark-mode>
-
-
-<script>
-  var app = angular.module('myApp', []);
-  app.controller('customersCtrl', function($scope, $http) {
-    $http.get("http://www.w3schools.com/angular/customers_mysql.php")
-      .then(function (response) {$scope.names = response.data.records;});
-  });
-</script>

@@ -24,7 +24,6 @@ export class ChartComponent implements OnInit, OnDestroy {
   public values: number[];
 
   constructor(dbHandler: DBHandlerApiService) {
-    this.dbHandler = dbHandler;
   }
 
   ngOnInit(): void {
