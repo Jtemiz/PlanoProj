@@ -39,6 +39,6 @@ export class DBHandlerApiService {
   }
 
   getTables() {
-    return this.http.get<string[]>(this.apiURL + '/management');
+    return this.http.get<string[]>(this.apiURL + 'management');
   }
 }
