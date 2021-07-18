@@ -11,7 +11,7 @@ import {Messwert} from '../Messwert';
 export class DBHandlerApiService {
   constructor(private http: HttpClient) { }
   public messwert: Messwert[];
-  private apiURL = 'http://192.168.178.153:5000/';
+  private apiURL = 'http://127.0.0.0:5000/';
   private ardURL = 'http://192.168.178.170/';
 
   setComment(str: string, at: number): void {
@@ -31,7 +31,7 @@ export class DBHandlerApiService {
   }
 
   startArduino(tabN: string) {
-    this.http.put<any>(this.ardURL, {tableName: tabN} ).subscribe(data => console.log('Arduino started measuring and writhing in ' + tabN + '; Return Value = ' + data))
+    this.http.put<any>(this.ardURL, {tableName: tabN} ).subscribe(data => console.log("Arduino started measuring and writhing in " + tabN + "; Return Value = " + data))
   }
 
   getNewValues() {
