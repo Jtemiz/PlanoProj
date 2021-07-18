@@ -11,7 +11,7 @@ import {Messwert} from '../Messwert';
 export class DBHandlerApiService {
   constructor(private http: HttpClient) { }
   public messwert: Messwert[];
-  private apiURL = 'http://localhost:5000/';
+  private apiURL = 'http://192.168.178.153:5000/';
   private ardURL = 'http://192.168.178.170/';
 
   setComment(str: string, at: number): void {
