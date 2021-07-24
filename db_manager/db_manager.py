@@ -106,5 +106,5 @@ api.add_resource(SimpleApi2, '/management')
 
 
 if __name__ == '__main__':
-  app.run(debug=True, port=5000, host='192.168.178.153')
+  app.run(debug=True)
 

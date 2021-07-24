@@ -1,7 +1,10 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {interval, Subscription} from 'rxjs';
+import {Component, OnInit, OnDestroy, Output, EventEmitter} from '@angular/core';
+import {interval, Observable, Subscription} from 'rxjs';
 import {ConfigComponent} from '../../config/config.component';
 import {DBHandlerApiService} from '../../services/db-handler-api.service';
+import {DarkModeComponent} from '../../services/dark-mode/dark-mode.component';
+import {DarkModeService} from 'angular-dark-mode';
+
 @Component({
   selector: 'app-basic-update',
   templateUrl: './chart.component.html',
@@ -10,7 +13,7 @@ import {DBHandlerApiService} from '../../services/db-handler-api.service';
 
 
 export class ChartComponent implements OnInit, OnDestroy {
-  runningMeasuring = false;
+  runningMeasuring = true;
   subscription: Subscription;
   options: any;
   updateOptions: any;
@@ -22,10 +25,11 @@ export class ChartComponent implements OnInit, OnDestroy {
   private timer: any;
   private config: ConfigComponent;
   public values: number[];
-
-  constructor(dbHandler: DBHandlerApiService) {
-  }
-
+  public comments: string[] = ['Tagesnaht', 'Verschmutzte Fahrbahn', 'Kurve', 'Bodenwelle'];
+  public choosedComment: string = this.comments[0];
+  public choosedPosition: number;
+  darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
+  constructor(dbHandler: DBHandlerApiService, private darkModeService: DarkModeService) {}
   ngOnInit(): void {
 
     /**
@@ -117,17 +121,27 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   startMeasuring() {
-   this.dbHandler.createTable();
-  // this.runningMeasuring = true;
-  // this.data = [];
-  // this.values = [];
+    if (!this.runningMeasuring) {
+      this.dbHandler.createTable();
+      this.runningMeasuring = true;
+      // this.data = [];
+      // this.values = [];
+    }
+  }
+  setComment(str: string, at: number) {
+  this.dbHandler.setComment(str, at);
+  }
+  stopMeasuring() {
+    this.runningMeasuring = false;
   }
 
-  /*
-convertDate() {
-    const position =
+  /**
+   * @TODO implement pauseMeasuringMethode
+   */
+  pauseMeasuring() {
+    return null;
   }
-
+/*
   randomData() {
     this.now = new Date(this.now.getTime() + this.oneDay);
     this.value = this.value + Math.random() * 30 - 10;
@@ -139,7 +153,6 @@ convertDate() {
       ]
     };
   }
-
  */
 
 }

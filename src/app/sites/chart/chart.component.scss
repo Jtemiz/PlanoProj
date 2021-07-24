@@ -1,14 +1,26 @@
 
-@media only screen and (min-width: 415px){
-  .button {
+@media only screen and (min-width: 415px) {
+  .button-light {
+    background-color: #f1f3f4;
     border: none;
-    color: white;
+    color: #082344;
     height: 250px;
     width: 250px;
     text-align: center;
     text-decoration: none;
     font-size: 30px;
-    margin: 4px 2px;
+    cursor: auto;
+  }
+
+  .button-dark {
+    background-color: #343a40;
+    border: none;
+    color: #f1f3f4;
+    height: 250px;
+    width: 250px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 30px;
     cursor: auto;
   }
 }
@@ -28,9 +40,29 @@
 }
 
 #buttonStart:hover {
-  background-color: green;
+  background-color: #075307;
+  color: #f1f3f4;
+  transition: 500ms;
+  opacity: 0.7;
 }
 
 #buttonStop:hover {
-  background-color: red;
+  background-color: #5e0505;
+  color: #f1f3f4;
+  transition: 500ms;
+  opacity: 0.7;
+}
+
+#buttonPause:hover {
+  background-color: #895e06;
+  color: #f1f3f4;
+  transition: 500ms;
+  opacity: 0.7;
+}
+
+.container{
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 4px;
 }

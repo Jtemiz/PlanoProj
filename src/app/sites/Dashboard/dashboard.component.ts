@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import {DarkModeService} from 'angular-dark-mode';
+import {Observable} from 'rxjs';
 @Component({
   selector: 'app-root',
   templateUrl: './dashboard.component.html',
@@ -6,6 +8,6 @@ import { Component } from '@angular/core';
 })
 export class DashboardComponent {
   title = 'Dashboard';
-  x: any;
-  y: any;
+  constructor(private darkModeService: DarkModeService) {}
+  darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
 }

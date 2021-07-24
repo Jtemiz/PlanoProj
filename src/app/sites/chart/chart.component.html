@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>Messung</title>
 </head>
-<body>
+<body style="background: none">
 <header>
 
 </header>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg" [ngClass]="(darkMode$ | async)? 'navbar-dark, bg-dark' : 'navbar-light, bg-light'">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -24,10 +24,25 @@
 </nav>
 
 <div echarts [options]="options" [merge]="updateOptions" class="demo-chart"></div>
-<div>
-<button (click)="startMeasuring()" class="button" id="buttonStart"> Messung Starten </button>
-<button class="button" id="buttonStop"> Messung beenden </button>
+<div class="container">
+  <button (click)="startMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonStart"> Messung Starten </button>
+  <button (click)="pauseMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonPause" > Messung pausieren </button>
+  <button (click) ="stopMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonStop" > Messung beenden </button>
+  <div class="btn-group mr-3">
+    <button type="button" class="btn btn-outline-success" (click)="setComment(choosedComment, choosedPosition)">{{choosedComment}}</button>
+    <div class="btn-group" ngbDropdown role="group">
+      <button class="btn btn-outline-primary" ngbDropdownToggle>Markierungen</button>
+      <div class="dropdown-menu" ngbDropdownMenu>
+        <ng-container *ngFor="let comment of comments;let i=index">
+          <button ngbDropdownItem (click)="choosedComment = comment">{{comment}}</button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
 </div>
+
+
+
 </body>
 <app-dark-mode style="display: none"></app-dark-mode>
 </html>

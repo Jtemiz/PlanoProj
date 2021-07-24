@@ -1,14 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 header.dark-mode,
 body.dark-mode {
-  background-color: #2d3436;
+  background-color: #121212;
   color: #dfe6e9;
 }
 
 header.light-mode,
 body.light-mode {
   background-color: #dfe6e9;
-  color: #2d3436;
+  color: #000000;
 }
 
 header {
@@ -16,6 +16,7 @@ header {
   background-size: 400px;
   background-repeat: no-repeat;
   height: 200px;
+  background-position: center;
 }
 
 html, body {

@@ -4,7 +4,14 @@ import {DarkModeService} from 'angular-dark-mode';
 
 @Component({
   selector: 'app-dark-mode',
-  templateUrl: './dark-mode.component.html',
+  template: '<label class="switch">\n' +
+    '  <input\n' +
+    '    type="checkbox"\n' +
+    '    [checked]="darkMode$ | async"\n' +
+    '    (change)="onToggle()"\n' +
+    '    class="toggle"\n' +
+    '  />  <span class="slider round"></span>\n' +
+    '</label>',
   styleUrls: ['./dark-mode.component.css']
 })
 export class DarkModeComponent {
@@ -16,3 +23,4 @@ export class DarkModeComponent {
     this.darkModeService.toggle();
   }
 }
+

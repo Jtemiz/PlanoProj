@@ -18,6 +18,8 @@
     ]
   },
   "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false
+    "resolveJsonModule": true,
+    "enableI18nLegacyMessageIdFormat": false,
+    "esModuleInterop": true
   }
 }

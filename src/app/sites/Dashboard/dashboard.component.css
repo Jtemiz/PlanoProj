@@ -1,6 +1,19 @@
 
 @media only screen and (min-width: 415px){
-  button {
+  .button-light {
+    background-color: #f1f3f4;
+    border: none;
+    color: #082344;
+    height: 250px;
+    width: 250px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 30px;
+    cursor: auto;
+  }
+
+  .button-dark {
+    background-color: #343a40;
     border: none;
     color: white;
     height: 250px;
@@ -8,22 +21,32 @@
     text-align: center;
     text-decoration: none;
     font-size: 30px;
-    margin: 4px 2px;
     cursor: auto;
+  }
+  .container{
+    margin-top: 4px;
+    max-width: 750px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 4px;
   }
 }
 
 @media only screen and (max-width: 415px) {
   .button {
     border: none;
-    color: white;
+    color: #082344;
     height: 100px;
     width: 250px;
     text-align: center;
     text-decoration: none;
     font-size: 30px;
-    margin: 4px 2px;
     cursor: auto;
+  }
+  .container{
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-gap: 4px;
   }
 }
 
