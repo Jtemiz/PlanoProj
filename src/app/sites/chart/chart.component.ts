@@ -124,8 +124,8 @@ export class ChartComponent implements OnInit, OnDestroy {
     if (!this.runningMeasuring) {
       this.dbHandler.createTable();
       this.runningMeasuring = true;
-      // this.data = [];
-      // this.values = [];
+      this.data = [];
+      this.values = [];
     }
   }
   setComment(str: string, at: number) {
@@ -133,6 +133,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
   stopMeasuring() {
     this.runningMeasuring = false;
+    this.dbHandler.stopArduino();
   }
 
   /**

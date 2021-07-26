@@ -19,13 +19,17 @@ export class DBHandlerApiService {
   }
 
   createTable() {
-    const date: Date = new Date(Date.now());
-    const tabN: string = date.getFullYear()
+   // const date: Date = new Date(Date.now());
+    /*const tabN: string = date.getFullYear()
       + ('0' + (date.getMonth() + 1)).slice(-2)
       + ('0' + date.getDate()).slice(-2)
       + ('0' + date.getHours()).slice(-2)
       + ('0' + date.getMinutes()).slice(-2);
-    this.http.put<any>(this.apiURL + 'management', {tableName: tabN} ).subscribe(data => console.log("created new table: " + tabN + "; Return Value = " + data));
+     */
+    const tabN = 'hallo';
+    console.log("tableName generated")
+    this.http.put<any>(this.apiURL + 'management', {tableName: tabN} ).subscribe(data => console.log("created new table: " + tabN + "; Return Value = " + data),
+      error => console.log(error));
   }
 
   stopArduino() {
