@@ -17,7 +17,6 @@ export class ChartComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   options: any;
   updateOptions: any;
-  dbHandler: DBHandlerApiService;
   private oneDay = 24 * 3600 * 1000;
   private now: Date;
   private value: number;
@@ -29,7 +28,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   public choosedComment: string = this.comments[0];
   public choosedPosition: number;
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
-  constructor(dbHandler: DBHandlerApiService, private darkModeService: DarkModeService) {}
+  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService) {}
   ngOnInit(): void {
 
     /**
