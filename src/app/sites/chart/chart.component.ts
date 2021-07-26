@@ -113,10 +113,7 @@ export class ChartComponent implements OnInit, OnDestroy {
     this.dbHandler.getNewValues().subscribe(data => {
         console.log(data);
         return data;
-    },
-      error => {
-      console.log(error);
-      });
+    });
   }
 
   startMeasuring() {
