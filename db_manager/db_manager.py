@@ -4,6 +4,7 @@ from flask_restful import Api, Resource, reqparse
 from dbutils.persistent_db import PersistentDB
 from flask_cors import CORS, cross_origin
 from gpiozero import LED
+
 app = Flask(__name__)
 api = Api(app)
 cors = CORS(app)
