@@ -35,11 +35,14 @@ export class ChartComponent implements OnInit, OnDestroy {
      * periodical run of getValues()-method
      * Parameter period = interval of running method getValues()
      */
+
+    /*
     const source = interval(2000000);
     this.subscription = source.subscribe(val => { if (this.runningMeasuring == true) {
       this.getValues();
       console.log('Measuring running');
     } });
+     */
     // generate some random testing data:
 
     this.data = [];
@@ -90,8 +93,8 @@ export class ChartComponent implements OnInit, OnDestroy {
     this.timer = setInterval(() => {
       if (this.runningMeasuring){
         for (let i = 0; i < 5; i++) {
-          this.data.shift();
-          this.data.push(this.getValues());
+          //this.data.shift();
+          //this.data.push(this.getValues());
       }
       }
 
@@ -110,7 +113,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   getValues() {
-    this.dbHandler.getNewValues().subscribe(data => {
+    this.dbHandler.getNewValues(1000).subscribe(data => {
         console.log(data);
         return data;
     });

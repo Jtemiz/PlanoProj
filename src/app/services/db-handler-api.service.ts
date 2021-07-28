@@ -33,8 +33,8 @@ export class DBHandlerApiService {
   stopArduino() {
     this.http.get(this.apiURL + 'stop');
   }
-  getNewValues() {
-    return this.http.get<Messwert[]>(this.apiURL);
+  getNewValues(lastPos: number) {
+    return this.http.get<Messwert[]>(this.apiURL + lastPos);
   }
 
   getAllTables() {
