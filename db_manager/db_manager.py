@@ -3,7 +3,7 @@ from flask import Flask
 from flask_restful import Api, Resource, reqparse
 from dbutils.persistent_db import PersistentDB
 from flask_cors import CORS, cross_origin
-from gpiozero import LED
+import RPi.GPIO as GPIO
 
 app = Flask(__name__)
 api = Api(app)
@@ -34,8 +34,13 @@ parser.add_argument('position', type=int, required=False, help='argument require
 parser2 = reqparse.RequestParser()
 parser2.add_argument('tableName', type=int, required=True, help='argument required')
 
+GPIO.setmode(GPIO.BCM)
+OUTPUT_PIN = 23
+GPIO.setup(OUTPUT_PIN, GPIO.OUT)
 
-# Class for the running Measurement
+
+
+GPIO.cleanup()# Class for the running Measurement
 # Contains get for send new Values to the Frontend
 # Contains put for setting Comments in the Database while Measuring
 class SimpleApi(Resource):
@@ -128,7 +133,7 @@ class SimpleApi3(Resource):
       cnx.close()
       tableName = args['tableName']
       mIsActive = True
-      LED(17).on()
+      GPIO.output(OUTPUT_PIN, GPIO.HIGH)
       return args['tableName'], 200
     except Exception as ex:
       print(ex)
@@ -138,7 +143,8 @@ class SimpleApi4(Resource):
   def get(self):
     global mIsActive
     mIsActive = False
-    LED(17).off()
+    GPIO.output(OUTPUT_PIN, GPIO.LOW)
+
 # this adds our resources to the api
 # we define what resource we want to add and which path we would like to use
 api.add_resource(SimpleApi, '/', '/<int:lastPosition>')
