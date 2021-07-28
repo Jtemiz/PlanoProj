@@ -128,7 +128,7 @@ class SimpleApi3(Resource):
       cnx.close()
       tableName = args['tableName']
       mIsActive = True
-  #   LED(17).on()
+      LED(17).on()
       return args['tableName'], 200
     except Exception as ex:
       print(ex)
