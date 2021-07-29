@@ -4,6 +4,7 @@ from flask_restful import Api, Resource, reqparse
 from dbutils.persistent_db import PersistentDB
 from flask_cors import CORS, cross_origin
 import RPi.GPIO as GPIO
+from time import sleep
 
 app = Flask(__name__)
 api = Api(app)
@@ -34,6 +35,7 @@ parser.add_argument('position', type=int, required=False, help='argument require
 parser2 = reqparse.RequestParser()
 parser2.add_argument('tableName', type=int, required=True, help='argument required')
 
+# RPi.GPIO setup
 GPIO.setmode(GPIO.BCM)
 OUTPUT_PIN = 23
 GPIO.setup(OUTPUT_PIN, GPIO.OUT)
@@ -134,6 +136,7 @@ class SimpleApi3(Resource):
       tableName = args['tableName']
       mIsActive = True
       GPIO.output(OUTPUT_PIN, GPIO.HIGH)
+      sleep(10)
       return args['tableName'], 200
     except Exception as ex:
       print(ex)
@@ -144,7 +147,6 @@ class SimpleApi4(Resource):
     global mIsActive
     mIsActive = False
     GPIO.output(OUTPUT_PIN, GPIO.LOW)
-
 # this adds our resources to the api
 # we define what resource we want to add and which path we would like to use
 api.add_resource(SimpleApi, '/', '/<int:lastPosition>')
