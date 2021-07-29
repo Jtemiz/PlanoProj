@@ -40,9 +40,6 @@ GPIO.setmode(GPIO.BCM)
 OUTPUT_PIN = 23
 GPIO.setup(OUTPUT_PIN, GPIO.OUT)
 
-
-
-GPIO.cleanup()# Class for the running Measurement
 # Contains get for send new Values to the Frontend
 # Contains put for setting Comments in the Database while Measuring
 class SimpleApi(Resource):
@@ -136,7 +133,6 @@ class SimpleApi3(Resource):
       tableName = args['tableName']
       mIsActive = True
       GPIO.output(OUTPUT_PIN, GPIO.HIGH)
-      sleep(10)
       return args['tableName'], 200
     except Exception as ex:
       print(ex)
