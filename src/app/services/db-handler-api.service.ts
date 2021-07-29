@@ -44,7 +44,7 @@ export class DBHandlerApiService {
    * Get-Request is accessable on 192.168.178.153/stop
    */
   stopArduino() {
-    this.http.get(this.apiURL + 'stop');
+    return this.http.get(this.apiURL + 'stop').subscribe(data => console.log(data));
   }
 
   /**

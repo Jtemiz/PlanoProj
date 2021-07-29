@@ -143,6 +143,8 @@ class SimpleApi4(Resource):
     global mIsActive
     mIsActive = False
     GPIO.output(OUTPUT_PIN, GPIO.LOW)
+    return "GPIO.LOW funktioniert", 200
+
 # this adds our resources to the api
 # we define what resource we want to add and which path we would like to use
 api.add_resource(SimpleApi, '/', '/<int:lastPosition>')
