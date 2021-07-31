@@ -4,13 +4,12 @@ from flask_restful import Api, Resource, reqparse
 from dbutils.persistent_db import PersistentDB
 from flask_cors import CORS, cross_origin
 import RPi.GPIO as GPIO
-from time import sleep
 
 app = Flask(__name__)
 api = Api(app)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-global mIsActive
+mIsActive = False
 global tableName
 
 # connection to mysql database
@@ -36,6 +35,7 @@ parser2 = reqparse.RequestParser()
 parser2.add_argument('tableName', type=int, required=True, help='argument required')
 
 # RPi.GPIO setup
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 OUTPUT_PIN = 23
 GPIO.setup(OUTPUT_PIN, GPIO.OUT)
@@ -140,10 +140,14 @@ class SimpleApi3(Resource):
 
 class SimpleApi4(Resource):
   def get(self):
-    global mIsActive
-    mIsActive = False
-    GPIO.output(OUTPUT_PIN, GPIO.LOW)
-    return "GPIO.LOW funktioniert", 200
+    try:
+      global mIsActive
+      mIsActive = False
+      GPIO.output(OUTPUT_PIN, GPIO.LOW)
+      return "Messung gestoppt", 200
+    except Exception as ex:
+      print(ex)
+      return "Messung konnte nicht gestoppt werden", 400
 
 # this adds our resources to the api
 # we define what resource we want to add and which path we would like to use

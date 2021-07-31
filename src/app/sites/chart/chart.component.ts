@@ -13,7 +13,7 @@ import {DarkModeService} from 'angular-dark-mode';
 
 
 export class ChartComponent implements OnInit, OnDestroy {
-  runningMeasuring = true;
+  runningMeasuring = false;
   subscription: Subscription;
   options: any;
   updateOptions: any;
@@ -95,7 +95,7 @@ export class ChartComponent implements OnInit, OnDestroy {
         for (let i = 0; i < 5; i++) {
           //this.data.shift();
           //this.data.push(this.getValues());
-      }
+        }
       }
 
       // update series data:
