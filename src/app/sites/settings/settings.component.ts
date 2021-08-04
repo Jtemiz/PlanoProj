@@ -12,4 +12,5 @@ export class SettingsComponent {
   title = 'Settings';
   constructor(private darkModeService: DarkModeService) {}
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
+  public isCollapsed = true;
 }

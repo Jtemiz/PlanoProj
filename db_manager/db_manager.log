@@ -1,0 +1,388 @@
+2021-08-04 20:39:40,867 - INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-08-04 20:39:40,871 - INFO:  * Restarting with stat
+2021-08-04 20:39:41,075 - WARNING:  * Debugger is active!
+2021-08-04 20:39:41,086 - INFO:  * Debugger PIN: 247-635-181
+2021-08-04 20:40:27,720 - INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-08-04 20:40:27,722 - INFO:  * Restarting with stat
+2021-08-04 20:40:27,906 - WARNING:  * Debugger is active!
+2021-08-04 20:40:27,910 - INFO:  * Debugger PIN: 247-635-181
+2021-08-04 20:40:41,613 - INFO: 127.0.0.1 - - [04/Aug/2021 20:40:41] "[33mGET / HTTP/1.1[0m" 404 -
+2021-08-04 20:40:41,715 - INFO: 127.0.0.1 - - [04/Aug/2021 20:40:41] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2021-08-04 20:40:51,974 - ERROR: MeasurementDatabaseApi.get(): (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 207, in connection
+    con = self.thread.connection
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/_threading_local.py", line 223, in __getattribute__
+    return object.__getattribute__(self, name)
+AttributeError: 'local' object has no attribute 'connection'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 613, in connect
+    sock = socket.create_connection(
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 843, in create_connection
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 831, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py", line 61, in get
+    cnx = mysql_connection_pool.connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 209, in connection
+    con = self.steady_connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 194, in steady_connection
+    return connect(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 135, in connect
+    return SteadyDBConnection(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 190, in __init__
+    self._store(self._create())
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 208, in _create
+    con = self._creator(*self._args, **self._kwargs)
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 353, in __init__
+    self.connect()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+
+2021-08-04 20:40:51,974 - INFO: 127.0.0.1 - - [04/Aug/2021 20:40:51] "GET /500 HTTP/1.1" 200 -
+2021-08-04 20:41:03,795 - ERROR: MeasurementDatabaseApi.get(): (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 207, in connection
+    con = self.thread.connection
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/_threading_local.py", line 223, in __getattribute__
+    return object.__getattribute__(self, name)
+AttributeError: 'local' object has no attribute 'connection'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 613, in connect
+    sock = socket.create_connection(
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 843, in create_connection
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 831, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py", line 61, in get
+    cnx = mysql_connection_pool.connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 209, in connection
+    con = self.steady_connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 194, in steady_connection
+    return connect(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 135, in connect
+    return SteadyDBConnection(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 190, in __init__
+    self._store(self._create())
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 208, in _create
+    con = self._creator(*self._args, **self._kwargs)
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 353, in __init__
+    self.connect()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+
+2021-08-04 20:41:03,795 - INFO: 127.0.0.1 - - [04/Aug/2021 20:41:03] "GET /500 HTTP/1.1" 200 -
+2021-08-04 20:41:09,524 - ERROR: MeasurementDatabaseApi.get(): (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 207, in connection
+    con = self.thread.connection
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/_threading_local.py", line 223, in __getattribute__
+    return object.__getattribute__(self, name)
+AttributeError: 'local' object has no attribute 'connection'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 613, in connect
+    sock = socket.create_connection(
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 843, in create_connection
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 831, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py", line 61, in get
+    cnx = mysql_connection_pool.connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 209, in connection
+    con = self.steady_connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 194, in steady_connection
+    return connect(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 135, in connect
+    return SteadyDBConnection(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 190, in __init__
+    self._store(self._create())
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 208, in _create
+    con = self._creator(*self._args, **self._kwargs)
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 353, in __init__
+    self.connect()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+
+2021-08-04 20:41:09,525 - INFO: 127.0.0.1 - - [04/Aug/2021 20:41:09] "GET /800 HTTP/1.1" 200 -
+2021-08-04 20:41:17,549 - ERROR: MeasurementStartApi.get(): name 'tableName' is not defined
+Traceback (most recent call last):
+  File "/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py", line 122, in get
+    return tableName, 200
+NameError: name 'tableName' is not defined
+
+2021-08-04 20:41:17,549 - INFO: 127.0.0.1 - - [04/Aug/2021 20:41:17] "GET /start HTTP/1.1" 200 -
+2021-08-04 20:41:21,094 - INFO: 127.0.0.1 - - [04/Aug/2021 20:41:21] "GET /stop HTTP/1.1" 200 -
+2021-08-04 20:45:54,011 - INFO:  * Detected change in '/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py', reloading
+2021-08-04 20:45:54,038 - INFO:  * Restarting with stat
+2021-08-04 20:45:54,312 - WARNING:  * Debugger is active!
+2021-08-04 20:45:54,318 - INFO:  * Debugger PIN: 247-635-181
+2021-08-04 20:46:03,204 - ERROR: MeasurementDatabaseApi.get(): (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 207, in connection
+    con = self.thread.connection
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/_threading_local.py", line 223, in __getattribute__
+    return object.__getattribute__(self, name)
+AttributeError: 'local' object has no attribute 'connection'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 613, in connect
+    sock = socket.create_connection(
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 843, in create_connection
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 831, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py", line 61, in get
+    cnx = mysql_connection_pool.connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 209, in connection
+    con = self.steady_connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 194, in steady_connection
+    return connect(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 135, in connect
+    return SteadyDBConnection(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 190, in __init__
+    self._store(self._create())
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 208, in _create
+    con = self._creator(*self._args, **self._kwargs)
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 353, in __init__
+    self.connect()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+
+2021-08-04 20:46:03,206 - INFO: 127.0.0.1 - - [04/Aug/2021 20:46:03] "[35m[1mGET /500 HTTP/1.1[0m" 500 -
+2021-08-04 20:46:30,609 - ERROR: MeasurementDatabaseApi.get(): (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 207, in connection
+    con = self.thread.connection
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/_threading_local.py", line 223, in __getattribute__
+    return object.__getattribute__(self, name)
+AttributeError: 'local' object has no attribute 'connection'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 613, in connect
+    sock = socket.create_connection(
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 843, in create_connection
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 831, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py", line 61, in get
+    cnx = mysql_connection_pool.connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 209, in connection
+    con = self.steady_connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 194, in steady_connection
+    return connect(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 135, in connect
+    return SteadyDBConnection(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 190, in __init__
+    self._store(self._create())
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 208, in _create
+    con = self._creator(*self._args, **self._kwargs)
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 353, in __init__
+    self.connect()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+
+2021-08-04 20:46:30,611 - INFO: 127.0.0.1 - - [04/Aug/2021 20:46:30] "[35m[1mGET /500 HTTP/1.1[0m" 500 -
+2021-08-04 20:46:30,613 - ERROR: Error on request:
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/werkzeug/serving.py", line 319, in run_wsgi
+    execute(self.server.app)
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/werkzeug/serving.py", line 311, in execute
+    write(data)
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/werkzeug/serving.py", line 290, in write
+    self.wfile.write(data)
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+OSError: [Errno 41] Protocol wrong type for socket
+2021-08-04 20:46:32,908 - ERROR: MeasurementDatabaseApi.get(): (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 207, in connection
+    con = self.thread.connection
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/_threading_local.py", line 223, in __getattribute__
+    return object.__getattribute__(self, name)
+AttributeError: 'local' object has no attribute 'connection'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 613, in connect
+    sock = socket.create_connection(
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 843, in create_connection
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 831, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py", line 61, in get
+    cnx = mysql_connection_pool.connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 209, in connection
+    con = self.steady_connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 194, in steady_connection
+    return connect(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 135, in connect
+    return SteadyDBConnection(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 190, in __init__
+    self._store(self._create())
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 208, in _create
+    con = self._creator(*self._args, **self._kwargs)
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 353, in __init__
+    self.connect()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+
+2021-08-04 20:46:32,909 - INFO: 127.0.0.1 - - [04/Aug/2021 20:46:32] "[35m[1mGET /500 HTTP/1.1[0m" 500 -
+2021-08-04 20:48:53,213 - INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-08-04 20:48:53,217 - INFO:  * Restarting with stat
+2021-08-04 20:48:53,441 - WARNING:  * Debugger is active!
+2021-08-04 20:48:53,445 - INFO:  * Debugger PIN: 247-635-181
+2021-08-04 20:55:58,872 - INFO: 127.0.0.1 - - [04/Aug/2021 20:55:58] "[33mPUT / HTTP/1.1[0m" 404 -
+2021-08-04 20:56:27,449 - ERROR: Angular Exception: test
+2021-08-04 20:56:27,449 - INFO: 127.0.0.1 - - [04/Aug/2021 20:56:27] "PUT /errorlogger HTTP/1.1" 200 -
+2021-08-04 20:57:27,202 - INFO:  * Detected change in '/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py', reloading
+2021-08-04 20:57:27,232 - INFO:  * Restarting with stat
+2021-08-04 20:57:27,489 - WARNING:  * Debugger is active!
+2021-08-04 20:57:27,494 - INFO:  * Debugger PIN: 247-635-181
+2021-08-04 20:57:38,199 - ERROR: Angular Exception: test
+2021-08-04 20:57:38,199 - INFO: 127.0.0.1 - - [04/Aug/2021 20:57:38] "PUT /errorlogger HTTP/1.1" 200 -
+2021-08-04 22:57:51,401 - INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-08-04 22:57:51,405 - INFO:  * Restarting with stat
+2021-08-04 22:57:51,590 - WARNING:  * Debugger is active!
+2021-08-04 22:57:51,596 - INFO:  * Debugger PIN: 247-635-181
+2021-08-04 22:58:08,644 - ERROR: MeasurementDatabaseApi.get(): (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 207, in connection
+    con = self.thread.connection
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/_threading_local.py", line 223, in __getattribute__
+    return object.__getattribute__(self, name)
+AttributeError: 'local' object has no attribute 'connection'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 613, in connect
+    sock = socket.create_connection(
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 843, in create_connection
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 831, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py", line 61, in get
+    cnx = mysql_connection_pool.connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 209, in connection
+    con = self.steady_connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 194, in steady_connection
+    return connect(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 135, in connect
+    return SteadyDBConnection(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 190, in __init__
+    self._store(self._create())
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 208, in _create
+    con = self._creator(*self._args, **self._kwargs)
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 353, in __init__
+    self.connect()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+
+2021-08-04 22:58:08,646 - INFO: 127.0.0.1 - - [04/Aug/2021 22:58:08] "[35m[1mGET /500 HTTP/1.1[0m" 500 -
+2021-08-04 22:59:26,425 - INFO: 127.0.0.1 - - [04/Aug/2021 22:59:26] "[33mGET /ismactive HTTP/1.1[0m" 404 -
+2021-08-04 22:59:27,695 - INFO: 127.0.0.1 - - [04/Aug/2021 22:59:27] "OPTIONS /start HTTP/1.1" 200 -
+2021-08-04 22:59:32,705 - ERROR: MeasurementStartApi.put(): (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 207, in connection
+    con = self.thread.connection
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/_threading_local.py", line 223, in __getattribute__
+    return object.__getattribute__(self, name)
+AttributeError: 'local' object has no attribute 'connection'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 613, in connect
+    sock = socket.create_connection(
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 843, in create_connection
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 831, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py", line 133, in put
+    cnx = mysql_connection_pool.connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 209, in connection
+    con = self.steady_connection()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/persistent_db.py", line 194, in steady_connection
+    return connect(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 135, in connect
+    return SteadyDBConnection(
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 190, in __init__
+    self._store(self._create())
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/dbutils/steady_db.py", line 208, in _create
+    con = self._creator(*self._args, **self._kwargs)
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 353, in __init__
+    self.connect()
+  File "/Users/jtemiz/venv/lib/python3.9/site-packages/pymysql/connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.178.153' (timed out)")
+
+2021-08-04 22:59:32,705 - INFO: 127.0.0.1 - - [04/Aug/2021 22:59:32] "[35m[1mPUT /start HTTP/1.1[0m" 500 -
+2021-08-04 22:59:37,223 - INFO: 127.0.0.1 - - [04/Aug/2021 22:59:37] "GET /stop HTTP/1.1" 200 -
+2021-08-04 23:00:33,161 - INFO:  * Detected change in '/Users/jtemiz/finishedProjs/PlanoProj/db_manager/db_manager.py', reloading
+2021-08-04 23:00:33,188 - INFO:  * Restarting with stat
+2021-08-04 23:00:33,461 - WARNING:  * Debugger is active!
+2021-08-04 23:00:33,465 - INFO:  * Debugger PIN: 247-635-181
+2021-08-04 23:07:05,074 - INFO: 127.0.0.1 - - [04/Aug/2021 23:07:05] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-04 23:07:05,079 - ERROR: Angular Exception: {'entryDate': '2021-08-04T21:07:05.065Z', 'message': 'Test the `log()` Method', 'level': 0, 'extraInfo': [True, False, 'Paul', 'Smith'], 'logWithDate': True}
+2021-08-04 23:07:05,080 - INFO: 127.0.0.1 - - [04/Aug/2021 23:07:05] "POST /errorlogger HTTP/1.1" 200 -

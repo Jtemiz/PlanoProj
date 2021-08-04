@@ -4,6 +4,8 @@ import {ConfigComponent} from '../../config/config.component';
 import {DBHandlerApiService} from '../../services/db-handler-api.service';
 import {DarkModeComponent} from '../../services/dark-mode/dark-mode.component';
 import {DarkModeService} from 'angular-dark-mode';
+import {NgbCarousel, NgbCarouselConfig} from '@ng-bootstrap/ng-bootstrap';
+import {LogService} from '../../services/LogService/log.service';
 
 @Component({
   selector: 'app-basic-update',
@@ -13,7 +15,7 @@ import {DarkModeService} from 'angular-dark-mode';
 
 
 export class ChartComponent implements OnInit, OnDestroy {
-  runningMeasuring = false;
+  static runningMeasuring: boolean;
   subscription: Subscription;
   options: any;
   updateOptions: any;
@@ -25,12 +27,15 @@ export class ChartComponent implements OnInit, OnDestroy {
   private config: ConfigComponent;
   public values: number[];
   public comments: string[] = ['Tagesnaht', 'Verschmutzte Fahrbahn', 'Kurve', 'Bodenwelle'];
-  public choosedComment: string = this.comments[0];
+  public choosedComment: string = 'Kommentar hinzufügen';
   public choosedPosition: number;
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
-  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService) {}
-  ngOnInit(): void {
 
+  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private logger: LogService) {
+    ChartComponent.runningMeasuring = dbHandler.isMActive();
+  }
+
+  ngOnInit(): void {
     /**
      * periodical run of getValues()-method
      * Parameter period = interval of running method getValues()
@@ -44,7 +49,6 @@ export class ChartComponent implements OnInit, OnDestroy {
     } });
      */
     // generate some random testing data:
-
     this.data = [];
     this.values = [];
     this.now = new Date(1997, 9, 3);
@@ -53,9 +57,6 @@ export class ChartComponent implements OnInit, OnDestroy {
 
     // initialize chart options:
     this.options = {
-      title: {
-        text: 'Messwerte'
-      },
       tooltip: {
         trigger: 'axis',
         formatter: (params) => {
@@ -91,7 +92,7 @@ export class ChartComponent implements OnInit, OnDestroy {
 
     // Mock dynamic data:
     this.timer = setInterval(() => {
-      if (this.runningMeasuring){
+      if (ChartComponent.runningMeasuring) {
         for (let i = 0; i < 5; i++) {
           //this.data.shift();
           //this.data.push(this.getValues());
@@ -114,25 +115,39 @@ export class ChartComponent implements OnInit, OnDestroy {
 
   getValues() {
     this.dbHandler.getNewValues(1000).subscribe(data => {
-        console.log(data);
-        return data;
+      console.log(data);
+      return data;
     });
   }
 
-  startMeasuring() {
-    if (!this.runningMeasuring) {
-      this.dbHandler.createTable();
-      this.runningMeasuring = true;
-      this.data = [];
-      this.values = [];
+  changeRunningMeasuring() {
+    if (!ChartComponent.runningMeasuring) {
+      this.startMeasuring();
+      return;
+    } else {
+      this.stopMeasuring();
     }
   }
-  setComment(str: string, at: number) {
-  this.dbHandler.setComment(str, at);
+
+  startMeasuring() {
+    try {
+      this.dbHandler.createTable();
+      ChartComponent.runningMeasuring = true;
+      this.data = [];
+      this.values = [];
+    }catch (e) {
+      this.logger.log(e);
+    }
   }
+
+  setComment(str: string, at: number) {
+    this.dbHandler.setComment(str, at);
+  }
+
   stopMeasuring() {
-    this.runningMeasuring = false;
+    ChartComponent.runningMeasuring = false;
     this.dbHandler.stopArduino();
+    console.log('Messung gestoppt');
   }
 
   /**
@@ -141,18 +156,23 @@ export class ChartComponent implements OnInit, OnDestroy {
   pauseMeasuring() {
     return null;
   }
-/*
-  randomData() {
-    this.now = new Date(this.now.getTime() + this.oneDay);
-    this.value = this.value + Math.random() * 30 - 10;
-    return {
-      name: this.now.toString(),
-      value: [
-        [this.now.getFullYear(), this.now.getMonth() + 1, this.now.getDate()].join('/'),
-        Math.round(this.value)
-      ]
-    };
-  }
- */
 
+  get staticUrlMeasuring() {
+    return ChartComponent.runningMeasuring;
+  }
+
+  /*
+    randomData() {
+      this.now = new Date(this.now.getTime() + this.oneDay);
+      this.value = this.value + Math.random() * 30 - 10;
+      return {
+        name: this.now.toString(),
+        value: [
+          [this.now.getFullYear(), this.now.getMonth() + 1, this.now.getDate()].join('/'),
+          Math.round(this.value)
+        ]
+      };
+    }
+   */
 }
+

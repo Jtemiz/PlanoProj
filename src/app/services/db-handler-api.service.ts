@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
 import {Messwert} from '../Messwert';
+import {Messung} from '../sites/datenbestand/datenbestand.component';
 
 
 @Injectable({
@@ -60,13 +61,23 @@ export class DBHandlerApiService {
    * Get-request is accessable on 192.168.178.153/management
    */
   getAllTables() {
-    return this.http.get<string[]>(this.apiURL + 'management');
+    return this.http.get<Messung[]>(this.apiURL + 'management');
   }
 
   /**
    * @TODO
    */
   getTable(tableName: string) {
-    return this.http.get<Messwert[]>(this.apiURL + 'datenbestand' + '/' + tableName);
+    return this.http.get<Messwert[]>(this.apiURL + 'datenbestand/' + tableName);
+  }
+
+  isMActive(): boolean {
+    let mIsActive: boolean;
+    this.http.get<boolean>(this.apiURL + 'ismactive').subscribe(data => (mIsActive = data));
+    if (mIsActive == true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

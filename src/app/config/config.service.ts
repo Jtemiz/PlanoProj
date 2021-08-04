@@ -68,5 +68,4 @@ export class ConfigService {
         catchError(this.handleError)
       );
   }
-
 }
