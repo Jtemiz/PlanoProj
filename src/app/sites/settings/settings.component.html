@@ -6,31 +6,81 @@
 </head>
 <body style="background: none">
 <header>
-
+  <nav class="navbar navbar-expand-lg" [ngClass]="(darkMode$ | async)? 'navbar-dark, bg-dark' : 'navbar-light, bg-light'">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="assets/logo.png" height="30"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="/chart">Messung</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="/data">Datenbestand</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="/settings">Einstellungen</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 </header>
 
-<nav class="navbar navbar-expand-lg" [ngClass]="(darkMode$ | async)? 'navbar-dark, bg-dark' : 'navbar-light, bg-light'">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav">
-      <a class="nav-item nav-link" routerLink="#">Home</a>
-      <a class="nav-item nav-link" routerLink="/chart">Messung</a>
-      <a class="nav-item nav-link" routerLink="/data">Datenbestand</a>
-      <a class="nav-item nav-link active" routerLink="/settings">Einstellungen <span class="sr-only">(current)</span></a>
-    </div>
-  </div>
-</nav>
-<table style="margin-left: 15px">
+
+<table class="table-sm" [ngClass]="(darkMode$ | async) ? 'table-dark': ''" >
   <tr>
-    <td style="padding: 10px">
+    <th>
       Nachtmodus
-    </td>
-    <td style="padding: 10px">
+    </th>
+    <th>
       <app-dark-mode> </app-dark-mode>
-    </td>
+    </th>
+  </tr>
+  <tr>
+    <th>
+    Versionsnummer
+    </th>
+    <th>
+      FE1AP1BE1
+    </th>
+  </tr>
+  <tr>
+    <th>
+      Update
+    </th>
+    <th>
+      <p>
+        <button type="button" class="btn btn-outline-primary" (click)="collapse.toggle()" [attr.aria-expanded]="!isCollapsed"
+                aria-controls="collapseExample">
+          Toggle
+        </button>
+      </p>
+      <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="font-weight-bolder"> APS ist via Ethernet mit Ihnen verbunden </h3>
+            Starten Sie den Updatevorgang.
+            Sobald Sie dazu aufgefordert werden, entfernen Sie das Ethernet-Kabel aus Ihrem Gerät. <br/>
+            Verbinden Sie den APS mit dem Internet und halten die Verbindung.<br/>
+            Sobald die Signallampe des APS aufhört zu leuchten, ist das Update abgeschlossen.<br/>
+
+            <h3> APS ist via WLAN mit Ihnen verbunden</h3>
+            Starten Sie den Updatevorgang.<br/>
+            Trennen Sie die WLAN-Verbindung zum APS, sobald Sie dazu aufgefordert werden.<br/>
+            Verbinden Sie den APS mit dem Internet und halten die Verbindung.<br/>
+            Sobald die Signallampe des APS aufhört zu leuchten, ist das Update abgeschlossen.
+          </div>
+        </div>
+      </div>
+    </th>
   </tr>
 </table>
+
 </body>
 </html>

@@ -1,68 +1,44 @@
 
-@media only screen and (min-width: 415px) {
-  .button-light {
-    background-color: #f1f3f4;
-    border: none;
-    color: #082344;
-    height: 250px;
-    width: 250px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 30px;
-    cursor: auto;
+@media only screen and (max-width: 415px) and (orientation: portrait) {
+  #hochformat {
+    display: flex !important;
+    position: center;
+    margin-right: auto;
+    margin-left: auto;
+    z-index:100;
+    border-radius: 20px;
+    width: 80%;
   }
-
-  .button-dark {
-    background-color: #343a40;
-    border: none;
-    color: #f1f3f4;
-    height: 250px;
-    width: 250px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 30px;
-    cursor: auto;
+  .content {
+    display: none;
   }
 }
 
-@media only screen and (max-width: 415px) {
-  .button {
-    border: none;
-    color: white;
-    height: 100px;
-    width: 250px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 30px;
-    margin: 4px 2px;
-    cursor: auto;
+@media only screen and (max-height: 415px) and (orientation:landscape)  {
+  #querformat {
+    display: block !important;
   }
+ header {
+   display: none;
+ }
 }
 
-#buttonStart:hover {
-  background-color: #075307;
-  color: #f1f3f4;
-  transition: 500ms;
-  opacity: 0.7;
+
+#col1 {
+  grid-template-rows: 1fr 1fr 1fr;
 }
 
-#buttonStop:hover {
-  background-color: #5e0505;
-  color: #f1f3f4;
-  transition: 500ms;
-  opacity: 0.7;
+.btn-danger:after {
+  content: 'Messung stoppen';
 }
 
-#buttonPause:hover {
-  background-color: #895e06;
-  color: #f1f3f4;
-  transition: 500ms;
-  opacity: 0.7;
+.btn-success:after {
+  content: 'Messung starten';
 }
 
-.container{
-  max-width: 1000px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-gap: 4px;
-}
+ .custom-chart {
+   height: 400px;
+ }
+
+ .btn {
+ }

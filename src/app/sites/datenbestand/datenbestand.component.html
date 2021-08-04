@@ -6,27 +6,72 @@
 </head>
 <body style="background: none">
 <header>
-
-</header>
-<nav class="navbar navbar-expand-lg" [ngClass]="(darkMode$ | async)? 'navbar-dark, bg-dark' : 'navbar-light, bg-light'">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav">
-      <a class="nav-item nav-link" routerLink="#">Home</a>
-      <a class="nav-item nav-link" routerLink="/chart">Messung</a>
-      <a class="nav-item nav-link active" routerLink="/data">Datenbestand<span class="sr-only">(current)</span></a>
-      <a class="nav-item nav-link" routerLink="/settings">Einstellungen</a>
+  <nav class="navbar navbar-expand-lg" [ngClass]="(darkMode$ | async)? 'navbar-dark, bg-dark' : 'navbar-light, bg-light'">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="assets/logo.png" height="30"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="/chart">Messung</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="/data">Datenbestand</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="/settings">Einstellungen</a>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
+</header>
 
-<ul>
-  <li *ngFor="let table of tables">
-    <button (click)="openTable(table)">{{table}}</button>
-  </li>
-</ul>
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th scope="col">#</th>
+    <th scope="col">Name</th>
+    <th scope="col">Messort</th>
+    <th scope="col">Mess-Distanz</th>
+    <th scope="col">Durchführender</th>
+
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let table of tables; index as i">
+    <th scope="row">{{i + 1}}</th>
+    <td>
+      {{table.name}}
+    </td>
+    <td>
+      {{table.ort}}
+    </td>
+    <td>
+      {{table.laenge}}
+    </td>
+    <td>
+      {{table.messer}}
+    </td>
+    <td>
+      <button class="btn" (click)="open(tables[i].name)"><fa-icon [icon]="['far', 'eye']"></fa-icon></button>
+
+
+      <!--<button class="btn" (click)="openTable(table.name)">-->
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+
+<button (click)="testLog()">Log Test</button>
+
 </body>
 <app-dark-mode style="display: none"></app-dark-mode>
 </html>
+

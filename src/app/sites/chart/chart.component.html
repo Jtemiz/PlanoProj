@@ -1,49 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Messung</title>
+  <meta charset="UTF-8">
+  <title>Messung</title>
 </head>
-<body style="background: none">
+<body>
 <header>
-
+  <nav class="navbar navbar-expand-lg fixed-top" [ngClass]="(darkMode$ | async)? 'navbar-dark, bg-dark' : 'navbar-light, bg-light'">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="assets/logo.png" height="30"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+              aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="/chart">Messung</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="/data">Datenbestand</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="/settings">Einstellungen</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 </header>
 
-<nav class="navbar navbar-expand-lg" [ngClass]="(darkMode$ | async)? 'navbar-dark, bg-dark' : 'navbar-light, bg-light'">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav">
-      <a class="nav-item nav-link" routerLink="#">Home</a>
-      <a class="nav-item nav-link active" routerLink="/chart">Messung<span class="sr-only">(current)</span></a>
-      <a class="nav-item nav-link" routerLink="/data">Datenbestand</a>
-      <a class="nav-item nav-link" routerLink="/settings">Einstellungen</a>
-    </div>
-  </div>
-</nav>
 
-<div echarts [options]="options" [merge]="updateOptions" class="demo-chart"></div>
-<div class="container">
-  <button (click)="startMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonStart"> Messung Starten </button>
-  <button (click)="pauseMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonPause" > Messung pausieren </button>
-  <button (click) ="stopMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonStop" > Messung beenden </button>
-  <div class="btn-group mr-3">
-    <button type="button" class="btn btn-outline-success" (click)="setComment(choosedComment, choosedPosition)">{{choosedComment}}</button>
-    <div class="btn-group" ngbDropdown role="group">
-      <button class="btn btn-outline-primary" ngbDropdownToggle>Markierungen</button>
-      <div class="dropdown-menu" ngbDropdownMenu>
-        <ng-container *ngFor="let comment of comments;let i=index">
-          <button ngbDropdownItem (click)="choosedComment = comment">{{comment}}</button>
-        </ng-container>
+
+<div class="content container">
+  <div class="row">
+    <div class="col-9">
+      <div echarts [options]="options" [merge]="updateOptions" class="demo-chart custom-chart"></div>
+    </div>
+    <div class="col-3 btn-group-vertical" id="col1">
+      <div style="height: 100px"></div>
+      <button type="button" class="btn" [ngClass]="staticUrlMeasuring ? 'btn-danger' : 'btn-success'"
+              (click)="changeRunningMeasuring()"></button>
+      <button type="button" class="btn btn-warning" *ngIf="staticUrlMeasuring" (click)="pauseMeasuring()">Messung
+        pausieren
+      </button>
+      <div class="input-group mb-3" style="margin-top: 4px" *ngIf="staticUrlMeasuring">
+        <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Kommentar">
+        <datalist id="datalistOptions">
+          <ng-container *ngFor="let comment of comments; let i=index">
+            <option value="{{comment}}">
+          </ng-container>
+        </datalist>
+        <button class="btn btn-outline-secondary" type="button" id="button-addon2"><img src="assets/chat-right-quote-fill.svg"></button>
       </div>
+      <div style="height: 70px"></div>
     </div>
   </div>
 </div>
 
-
-
+<img id="hochformat" src="assets/rotatePhone.gif" style="display: none"/>
 </body>
 <app-dark-mode style="display: none"></app-dark-mode>
 </html>
+    <!--
+    <div class="btn-group mr-3" *ngIf="staticUrlMeasuring" style="max-width: 20%">
+      <button type="button" class="btn btn-primary" (click)="setComment(choosedComment, choosedPosition)">{{choosedComment}}</button>
+      <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
+        <button class="btn btn-primary dropdown-toggle-split" ngbDropdownToggle></button>
+        <div class="dropdown-menu" ngbDropdownMenu >
+          <ng-container *ngFor="let comment of comments;let i=index">
+            <button ngbDropdownItem (click)="choosedComment = comment">{{comment}}</button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <button (click)="startMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonStart"> Messung Starten </button>
+    <button (click)="pauseMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonPause" > Messung pausieren </button>
+    <button (click) ="stopMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonStop" > Messung beenden </button>
+    <div class="btn-group mr-3">
+      <button type="button" class="btn btn-outline-success" (click)="setComment(choosedComment, choosedPosition)">{{choosedComment}}</button>
+      <div class="btn-group" ngbDropdown role="group">
+        <button class="btn btn-outline-primary" ngbDropdownToggle>Markierungen</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  -->
+
+
 
