@@ -7,7 +7,6 @@ import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EChartsOption} from 'echarts';
 import {faEye} from '@fortawesome/free-regular-svg-icons';
 import {FaIconLibrary} from '@fortawesome/angular-fontawesome';
-import {LogService} from '../../services/LogService/log.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -86,7 +85,7 @@ export class DatenbestandComponent {
     }
   ];
   selectedTableValues: Messwert[];
-  constructor(dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private modalService: NgbModal, private library: FaIconLibrary, private logger: LogService) {
+  constructor(dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private modalService: NgbModal, private library: FaIconLibrary) {
     library.addIcons(faEye);
   }
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
@@ -113,9 +112,5 @@ export class DatenbestandComponent {
   open(tableName: string) {
     const modalRef = this.modalService.open(NgbdModalContent);
     modalRef.componentInstance.name = tableName;
-  }
-
-  testLog(): void {
-    this.logger.log("Test the `log()` Method", true, false, "Paul", "Smith");
   }
 }

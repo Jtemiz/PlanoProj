@@ -386,3 +386,55 @@ pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.
 2021-08-04 23:07:05,074 - INFO: 127.0.0.1 - - [04/Aug/2021 23:07:05] "OPTIONS /errorlogger HTTP/1.1" 200 -
 2021-08-04 23:07:05,079 - ERROR: Angular Exception: {'entryDate': '2021-08-04T21:07:05.065Z', 'message': 'Test the `log()` Method', 'level': 0, 'extraInfo': [True, False, 'Paul', 'Smith'], 'logWithDate': True}
 2021-08-04 23:07:05,080 - INFO: 127.0.0.1 - - [04/Aug/2021 23:07:05] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:05:08,211 - INFO: 127.0.0.1 - - [05/Aug/2021 00:05:08] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:05:08,216 - ERROR: Angular Exception: {}
+2021-08-05 00:05:08,217 - INFO: 127.0.0.1 - - [05/Aug/2021 00:05:08] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:05:20,849 - INFO: 127.0.0.1 - - [05/Aug/2021 00:05:20] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:05:20,851 - ERROR: Angular Exception: {'headers': {'normalizedNames': {}, 'lazyUpdate': None, 'headers': {}}, 'status': 0, 'statusText': 'Unknown Error', 'url': 'http://192.168.178.153:5000/ismactive', 'ok': False, 'name': 'HttpErrorResponse', 'message': 'Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error', 'error': {'isTrusted': True}}
+2021-08-05 00:05:20,852 - INFO: 127.0.0.1 - - [05/Aug/2021 00:05:20] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:06:16,536 - INFO: 127.0.0.1 - - [05/Aug/2021 00:06:16] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:06:16,538 - ERROR: Angular Exception: {}
+2021-08-05 00:06:16,539 - INFO: 127.0.0.1 - - [05/Aug/2021 00:06:16] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:06:19,675 - ERROR: Angular Exception: {}
+2021-08-05 00:06:19,676 - INFO: 127.0.0.1 - - [05/Aug/2021 00:06:19] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:06:21,501 - ERROR: Angular Exception: {'headers': {'normalizedNames': {}, 'lazyUpdate': None, 'headers': {}}, 'status': 0, 'statusText': 'Unknown Error', 'url': 'http://192.168.178.153:5000/ismactive', 'ok': False, 'name': 'HttpErrorResponse', 'message': 'Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error', 'error': {'isTrusted': True}}
+2021-08-05 00:06:21,502 - INFO: 127.0.0.1 - - [05/Aug/2021 00:06:21] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:08:12,072 - INFO: 127.0.0.1 - - [05/Aug/2021 00:08:12] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:08:12,075 - ERROR: Angular Exception: {}
+2021-08-05 00:08:12,075 - INFO: 127.0.0.1 - - [05/Aug/2021 00:08:12] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:08:17,627 - INFO: 127.0.0.1 - - [05/Aug/2021 00:08:17] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:08:17,629 - ERROR: Angular Exception: {}
+2021-08-05 00:08:17,629 - INFO: 127.0.0.1 - - [05/Aug/2021 00:08:17] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:09:25,673 - INFO: 127.0.0.1 - - [05/Aug/2021 00:09:25] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:09:25,675 - ERROR: Angular Exception: {'headers': {'normalizedNames': {}, 'lazyUpdate': None, 'headers': {}}, 'status': 0, 'statusText': 'Unknown Error', 'url': 'http://192.168.178.153:5000/ismactive', 'ok': False, 'name': 'HttpErrorResponse', 'message': 'Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error', 'error': {'isTrusted': True}}
+2021-08-05 00:09:25,675 - INFO: 127.0.0.1 - - [05/Aug/2021 00:09:25] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:09:30,369 - ERROR: Angular Exception: {}
+2021-08-05 00:09:30,369 - INFO: 127.0.0.1 - - [05/Aug/2021 00:09:30] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:09:37,805 - INFO: 127.0.0.1 - - [05/Aug/2021 00:09:37] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:09:37,806 - ERROR: Angular Exception: {}
+2021-08-05 00:09:37,807 - INFO: 127.0.0.1 - - [05/Aug/2021 00:09:37] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:09:50,170 - INFO: 127.0.0.1 - - [05/Aug/2021 00:09:50] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:09:50,171 - ERROR: Angular Exception: Error1111
+2021-08-05 00:09:50,172 - INFO: 127.0.0.1 - - [05/Aug/2021 00:09:50] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:10:14,274 - INFO: 127.0.0.1 - - [05/Aug/2021 00:10:14] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:10:14,275 - ERROR: Angular Exception: Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error
+2021-08-05 00:10:14,275 - INFO: 127.0.0.1 - - [05/Aug/2021 00:10:14] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:12:31,142 - INFO: 127.0.0.1 - - [05/Aug/2021 00:12:31] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:12:31,144 - ERROR: Angular Exception: Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error
+2021-08-05 00:12:31,145 - INFO: 127.0.0.1 - - [05/Aug/2021 00:12:31] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:14:52,045 - INFO: 127.0.0.1 - - [05/Aug/2021 00:14:52] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:14:52,048 - ERROR: Angular Exception: Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error
+2021-08-05 00:14:52,048 - INFO: 127.0.0.1 - - [05/Aug/2021 00:14:52] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:15:08,810 - INFO: 127.0.0.1 - - [05/Aug/2021 00:15:08] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:15:08,813 - ERROR: Angular Exception: Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error
+2021-08-05 00:15:08,813 - INFO: 127.0.0.1 - - [05/Aug/2021 00:15:08] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:19:31,857 - INFO: 127.0.0.1 - - [05/Aug/2021 00:19:31] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:19:31,859 - ERROR: Angular Exception: Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error
+2021-08-05 00:19:31,859 - INFO: 127.0.0.1 - - [05/Aug/2021 00:19:31] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:19:32,112 - ERROR: Angular Exception: Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error
+2021-08-05 00:19:32,112 - INFO: 127.0.0.1 - - [05/Aug/2021 00:19:32] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:24:31,552 - INFO: 127.0.0.1 - - [05/Aug/2021 00:24:31] "OPTIONS /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:24:31,555 - ERROR: Angular Exception: Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error
+2021-08-05 00:24:31,555 - INFO: 127.0.0.1 - - [05/Aug/2021 00:24:31] "POST /errorlogger HTTP/1.1" 200 -
+2021-08-05 00:24:31,784 - ERROR: Angular Exception: Http failure response for http://192.168.178.153:5000/ismactive: 0 Unknown Error
+2021-08-05 00:24:31,784 - INFO: 127.0.0.1 - - [05/Aug/2021 00:24:31] "POST /errorlogger HTTP/1.1" 200 -

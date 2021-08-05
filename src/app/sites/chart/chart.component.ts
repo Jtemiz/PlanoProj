@@ -2,10 +2,7 @@ import {Component, OnInit, OnDestroy, Output, EventEmitter} from '@angular/core'
 import {interval, Observable, Subscription} from 'rxjs';
 import {ConfigComponent} from '../../config/config.component';
 import {DBHandlerApiService} from '../../services/db-handler-api.service';
-import {DarkModeComponent} from '../../services/dark-mode/dark-mode.component';
 import {DarkModeService} from 'angular-dark-mode';
-import {NgbCarousel, NgbCarouselConfig} from '@ng-bootstrap/ng-bootstrap';
-import {LogService} from '../../services/LogService/log.service';
 
 @Component({
   selector: 'app-basic-update',
@@ -31,7 +28,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   public choosedPosition: number;
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
 
-  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private logger: LogService) {
+  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService) {
     ChartComponent.runningMeasuring = dbHandler.isMActive();
   }
 
@@ -49,6 +46,8 @@ export class ChartComponent implements OnInit, OnDestroy {
     } });
      */
     // generate some random testing data:
+
+
     this.data = [];
     this.values = [];
     this.now = new Date(1997, 9, 3);
@@ -135,8 +134,8 @@ export class ChartComponent implements OnInit, OnDestroy {
       ChartComponent.runningMeasuring = true;
       this.data = [];
       this.values = [];
-    }catch (e) {
-      this.logger.log(e);
+    } catch (e) {
+
     }
   }
 

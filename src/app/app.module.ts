@@ -6,7 +6,6 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { RouterModule, Routes } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { LogPublishersService } from 'src/app/services/LogService/log-publishers.service';
 
 // Pages
 import {ChartComponent} from './sites/chart/chart.component';
@@ -18,8 +17,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DarkModeComponent } from './services/dark-mode/dark-mode.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {DARK_MODE_OPTIONS} from 'angular-dark-mode';
-import {LogService} from './services/LogService/log.service';
-import {LogPublisher} from './services/LogService/log-publisher';
+import {CustomErrorHandlerService} from './services/LogService/log.service';
+import {ApiLoggerService} from './services/LogService/api-logger.service';
 const appRoutes: Routes = [
   {
     path: 'chart', component: ChartComponent,
@@ -65,8 +64,11 @@ const appRoutes: Routes = [
     FontAwesomeModule
   ],
   providers: [
-    LogService,
-    LogPublishersService,
+    ApiLoggerService,
+    {
+    provide: ErrorHandler,
+    useClass: CustomErrorHandlerService
+  },
     {
     provide:  DARK_MODE_OPTIONS,
     useValue: {
