@@ -2,7 +2,7 @@ import logging
 import traceback
 
 import pymysql.cursors
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 from dbutils.persistent_db import PersistentDB
 from flask import Flask
 from flask_cors import CORS, cross_origin
@@ -47,10 +47,10 @@ parser3 = reqparse.RequestParser()
 parser3.add_argument('errorMessage', type=str, required=True, help='error message required')
 
 # RPi.GPIO setup
-#GPIO.setwarnings(False)
-#GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
 OUTPUT_PIN = 23
-#GPIO.setup(OUTPUT_PIN, GPIO.OUT)
+GPIO.setup(OUTPUT_PIN, GPIO.OUT)
 
 # Contains get for send new Values to the Frontend
 # Contains put for setting Comments in the Database while Measuring
@@ -138,24 +138,22 @@ class MeasurementStartApi(Resource):
       cnx.close()
       tableName = args['tableName']
       mIsActive = True
-      #GPIO.output(OUTPUT_PIN, GPIO.HIGH)
+      GPIO.output(OUTPUT_PIN, GPIO.HIGH)
       return args['tableName'], 200
     except Exception as ex:
       logging.error("MeasurementStartApi.put(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
-      #return "Database connection failed", 400
 
 class MeasurementStopApi(Resource):
   def get(self):
     try:
       global mIsActive
       mIsActive = False
-      #GPIO.output(OUTPUT_PIN, GPIO.LOW)
+      GPIO.output(OUTPUT_PIN, GPIO.LOW)
       return "Messung gestoppt", 200
     except Exception as ex:
       logging.error("MeasurementStopApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
-      #return "Messung konnte nicht gestoppt werden", 400
 
 class MeasurementStatusApi(Resource):
   def get(self):
@@ -187,5 +185,5 @@ api.add_resource(AngularErrorLoggerApi, '/errorlogger')
 
 if __name__ == '__main__':
 
-  app.run(debug=True, port=5000)
-  #app.run(debug=True, host="192.168.178.153", port=5000)
+  # app.run(debug=True, port=5000)
+  app.run(debug=True, host="192.168.178.153", port=5000)

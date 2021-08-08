@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 
 @Injectable()
 export class ApiLoggerService {
-  location = 'http://localhost:5000/errorlogger';
+  location = 'http://192.168.178.153:5000/errorlogger';
   constructor(  private http: HttpClient) {
   }
   log(entry) {
