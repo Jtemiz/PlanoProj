@@ -1,15 +1,16 @@
 import logging
 import traceback
-
 import pymysql.cursors
 import RPi.GPIO as GPIO
 from dbutils.persistent_db import PersistentDB
 from flask import Flask
 from flask_cors import CORS, cross_origin
 from flask_restful import Api, Resource, reqparse
+import threading
+import socketserver
 
 app = Flask(__name__)
-
+VALUES = []
 logging.basicConfig(filename=app.root_path + '/db_manager.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s: %(message)s')
 api = Api(app)
@@ -17,8 +18,8 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 mIsActive = False
-global tableName
-
+tableName = "tablenameString"
+global postArray
 # connection to mysql database
 db_config = {
   'host': '192.168.178.153',
@@ -32,6 +33,8 @@ mysql_connection_pool = PersistentDB(
   creator=pymysql,
   **db_config
 )
+
+udpServer = None
 
 # arg parser for API (running Measurement)
 parser = reqparse.RequestParser()
@@ -56,16 +59,12 @@ GPIO.setup(OUTPUT_PIN, GPIO.OUT)
 # Contains put for setting Comments in the Database while Measuring
 class MeasurementDatabaseApi(Resource):
   # used for the Chart to show all new Values
-  def get(self, lastPosition):
+  def get(self):
     try:
-      cnx = mysql_connection_pool.connection()
-      cursor = cnx.cursor()
-      sql = "SELECT `HOEHE`, `KOMMENT`, `POSITION` FROM `VALUE` WHERE `POSITION` > %s;"
-      cursor.execute(sql, (lastPosition))
-      result = cursor.fetchall()
-      cursor.close()
-      cnx.close()
-      return result, 200
+      global VALUES
+      vals = VALUES
+      VALUES = []
+      return vals, 200
     except Exception as ex:
       logging.error("MeasurementDatabaseApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
@@ -117,8 +116,10 @@ class MeasurementStartApi(Resource):
   # while (pinX = high) {
   # Messen, Messen, Messen!
   # }
+
   def get(self):
     try:
+      SUDPServer.start_server()
       return tableName, 200
     except Exception as ex:
       logging.error("MeasurementStartApi.get(): " + str(ex) + "\n" + traceback.format_exc())
@@ -147,6 +148,7 @@ class MeasurementStartApi(Resource):
 class MeasurementStopApi(Resource):
   def get(self):
     try:
+      SUDPServer.stop_server()
       global mIsActive
       mIsActive = False
       GPIO.output(OUTPUT_PIN, GPIO.LOW)
@@ -174,16 +176,64 @@ class AngularErrorLoggerApi(Resource):
       logging.error("AngularErrorLoggerApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
+
+# This class is a subclass of the DatagramRequestHandler and overrides the handle method
+class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
+
+  def handle(self):
+    global VALUES
+    message = self.rfile.readline().strip().decode('UTF-8')
+    VALUES.append(message)
+
+# This class provides a multithreaded UDP server that can receive messages sent to the defined ip and port
+class UDPServer(threading.Thread):
+  server_address = ("127.0.0.1", 5100)
+  udp_server_object = None
+
+  def run(self):
+    print("Server gestartet")
+    try:
+      self.udp_server_object = socketserver.ThreadingUDPServer(self.server_address, MyUDPRequestHandler)
+      self.udp_server_object.serve_forever()
+    except:
+      pass
+
+  def stop(self):
+    self.udp_server_object.shutdown()
+    print("UDP server shutdown")
+
+class SUDPServer():
+  __server:socketserver.ThreadingUDPServer = None
+
+  @staticmethod
+  def start_server():
+    if SUDPServer.__server == None:
+      SUDPServer()
+      SUDPServer.__server.start()
+
+  @staticmethod
+  def stop_server():
+    if SUDPServer.__server != None:
+      SUDPServer.__server.stop()
+      SUDPServer.__server = None
+
+  def __init__(self):
+    if SUDPServer.__server is not None:
+      raise Exception("Class is already initialized")
+    SUDPServer.__server = UDPServer()
+
+
+
 # this adds our resources to the api
 # we define what resource we want to add and which path we would like to use
-api.add_resource(MeasurementDatabaseApi, '/measurement', '/<int:lastPosition>')
+api.add_resource(MeasurementDatabaseApi, '/measurement')
 api.add_resource(MeasurementTableApi, '/tables')
 api.add_resource(MeasurementStartApi, '/start')
 api.add_resource(MeasurementStopApi, '/stop')
 api.add_resource(MeasurementStatusApi, '/status')
 api.add_resource(AngularErrorLoggerApi, '/errorlogger')
 
-if __name__ == '__main__':
 
-  # app.run(debug=True, port=5000)
-  app.run(debug=True, host="192.168.178.153", port=5000)
+if __name__ == '__main__':
+  app.run(debug=False, port=5000)
+
