@@ -47,9 +47,6 @@ export class ChartComponent implements OnInit, OnDestroy {
      */
     // generate some random testing data:
 
-
-    this.data = [];
-    this.values = [];
     this.now = new Date(1997, 9, 3);
     this.value = Math.random() * 1000;
     // this.data.push(this.dbHandler.getValues(0));
@@ -129,14 +126,10 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   startMeasuring() {
-    try {
       this.dbHandler.createTable();
       ChartComponent.runningMeasuring = true;
       this.data = [];
       this.values = [];
-    } catch (e) {
-
-    }
   }
 
   setComment(str: string, at: number) {
