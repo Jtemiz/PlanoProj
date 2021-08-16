@@ -3,6 +3,7 @@ import {interval, Observable, Subscription} from 'rxjs';
 import {ConfigComponent} from '../../config/config.component';
 import {DBHandlerApiService} from '../../services/db-handler-api.service';
 import {DarkModeService} from 'angular-dark-mode';
+import {Messwert} from '../../Messwert';
 
 @Component({
   selector: 'app-basic-update',
@@ -24,7 +25,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   private config: ConfigComponent;
   public values: number[];
   public comments: string[] = ['Tagesnaht', 'Verschmutzte Fahrbahn', 'Kurve', 'Bodenwelle'];
-  public choosedComment: string = 'Kommentar hinzufügen';
+  public choosedComment = 'Kommentar hinzufügen';
   public choosedPosition: number;
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
 
@@ -90,6 +91,7 @@ export class ChartComponent implements OnInit, OnDestroy {
     this.timer = setInterval(() => {
       if (ChartComponent.runningMeasuring) {
         for (let i = 0; i < 5; i++) {
+          this.data.push(this.getValues());
           //this.data.shift();
           //this.data.push(this.getValues());
         }
@@ -109,11 +111,24 @@ export class ChartComponent implements OnInit, OnDestroy {
     clearInterval(this.timer);
   }
 
-  getValues() {
-    this.dbHandler.getNewValues(1000).subscribe(data => {
+
+  getValues(): Messwert[] {
+    return this.dbHandler.getNewValues().subscribe(data => {
       console.log(data);
-      return data;
+      let mws = [];
+      data.forEach(function(str) {
+        if (str.substr(0, 2) == 'MES') {
+          mws.push(this.valueParser(str.substr(4)));
+        }
+      });
+      return mws;
     });
+  }
+
+  valueParser(valStr): Messwert {
+    // const pos = valStr.substr(4, valStr.lastIndexOf('/'));
+    // const height = valStr.substr(valStr.lastIndexOf('/') + 1, valStr.lastIndexOf('$'));
+    return new Messwert(valStr.substr(4, valStr.lastIndexOf('/')), valStr.substr(valStr.lastIndexOf('/') + 1, valStr.lastIndexOf('$')));
   }
 
   changeRunningMeasuring() {
@@ -126,10 +141,10 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   startMeasuring() {
-      this.dbHandler.createTable();
-      ChartComponent.runningMeasuring = true;
-      this.data = [];
-      this.values = [];
+    this.dbHandler.createTable();
+    ChartComponent.runningMeasuring = true;
+    this.data = [];
+    this.values = [];
   }
 
   setComment(str: string, at: number) {

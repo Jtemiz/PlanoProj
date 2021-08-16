@@ -54,8 +54,8 @@ export class DBHandlerApiService {
    * Get-request is accessable on 192.168.178.153/<Param: int>
    * @param lastPos means the newest received value
    */
-  getNewValues(lastPos: number) {
-    return this.http.get<any>(this.apiURL + 'measuring');
+  getNewValues() {
+    return this.http.get<string[]>(this.apiURL + 'measurement');
   }
   /**
    * sends a request to the API to get all existing tables in the Database (so all done measurements)
