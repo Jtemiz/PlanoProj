@@ -188,7 +188,7 @@ class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
 
 # This class provides a multithreaded UDP server that can receive messages sent to the defined ip and port
 class UDPServer(threading.Thread):
-  server_address = ("127.0.0.1", 5100)
+  server_address = ("192.168.178.153", 5100)
   udp_server_object = None
 
   def run(self):
