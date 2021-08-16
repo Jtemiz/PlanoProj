@@ -36,7 +36,7 @@ export class DBHandlerApiService {
       + ('0' + date.getMinutes()).slice(-2)
       + ('0' + date.getSeconds()).slice(-2);
     console.log('tableName generated ' + tabN);
-    this.http.put<any>(this.apiURL + 'start', {tableName: tabN} ).subscribe(data => console.log("created new table: " + tabN + "; Return Value = " + data),
+    return this.http.put<any>(this.apiURL + 'start', {tableName: tabN} ).subscribe(data => console.log("created new table: " + tabN + "; Return Value = " + data),
       error => console.log(error));
   }
 
@@ -74,7 +74,7 @@ export class DBHandlerApiService {
 
   isMActive(): boolean {
     let mIsActive: boolean;
-    this.http.get<boolean>(this.apiURL + 'ismactive').subscribe(data => (mIsActive = data));
+    this.http.get<boolean>(this.apiURL + 'status').subscribe(data => (mIsActive = data));
     if (mIsActive == true) {
       return true;
     } else {
