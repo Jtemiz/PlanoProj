@@ -235,5 +235,5 @@ api.add_resource(AngularErrorLoggerApi, '/errorlogger')
 
 
 if __name__ == '__main__':
-  app.run(debug=False, port=5000)
+  app.run(debug=False, host="192.168.178.153", port=5000)
 
