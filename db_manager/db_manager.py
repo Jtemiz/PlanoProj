@@ -183,6 +183,7 @@ class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
   def handle(self):
     global VALUES
     message = self.rfile.readline().strip().decode('UTF-8')
+    print(message)
     VALUES.append(message)
 
 # This class provides a multithreaded UDP server that can receive messages sent to the defined ip and port
