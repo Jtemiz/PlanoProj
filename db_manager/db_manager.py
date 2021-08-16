@@ -8,6 +8,7 @@ from flask_cors import CORS, cross_origin
 from flask_restful import Api, Resource, reqparse
 import threading
 import socketserver
+import socket
 
 app = Flask(__name__)
 VALUES = []
@@ -35,7 +36,8 @@ mysql_connection_pool = PersistentDB(
 )
 
 udpServer = None
-
+ARD_UDP_IP = "192.168.178.146"
+ARD_UDP_PORT = 9000
 # arg parser for API (running Measurement)
 parser = reqparse.RequestParser()
 parser.add_argument('kommentar', required=True, help='argument required')
@@ -54,6 +56,7 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 OUTPUT_PIN = 23
 GPIO.setup(OUTPUT_PIN, GPIO.OUT)
+
 
 # Contains get for send new Values to the Frontend
 # Contains put for setting Comments in the Database while Measuring
@@ -85,6 +88,7 @@ class MeasurementDatabaseApi(Resource):
       logging.error("MeasurementDatabaseApi.put(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
+
 class MeasurementTableApi(Resource):
   # used for "Datenbestand" to show all avaiable Data-Tables
   def get(self):
@@ -100,6 +104,7 @@ class MeasurementTableApi(Resource):
     except Exception as ex:
       logging.error("MeasurementTableApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
+
 
 # Class for Starting the Measurement
 # Contains get for sending the name of the Database-Table of the current Measurement to the Arduino
@@ -119,7 +124,6 @@ class MeasurementStartApi(Resource):
 
   def get(self):
     try:
-      SUDPServer.start_server()
       return tableName, 200
     except Exception as ex:
       logging.error("MeasurementStartApi.get(): " + str(ex) + "\n" + traceback.format_exc())
@@ -131,6 +135,15 @@ class MeasurementStartApi(Resource):
     global tableName
     global mIsActive
     try:
+      # send signal to Arduino
+      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+      sock.sendto(b"070", (ARD_UDP_IP, ARD_UDP_PORT))
+      print("Arduino gestartet")
+      sock.close()
+      sock = None
+      # UDP-Receiver
+      SUDPServer.start_server()
+      # Create new SqlTable
       cnx = mysql_connection_pool.connection()
       cursor = cnx.cursor()
       sql = "CREATE TABLE `%s` LIKE `VALUE`;"
@@ -138,6 +151,7 @@ class MeasurementStartApi(Resource):
       cursor.close()
       cnx.close()
       tableName = args['tableName']
+      # Set boolean True
       mIsActive = True
       GPIO.output(OUTPUT_PIN, GPIO.HIGH)
       return args['tableName'], 200
@@ -145,10 +159,16 @@ class MeasurementStartApi(Resource):
       logging.error("MeasurementStartApi.put(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
+
 class MeasurementStopApi(Resource):
   def get(self):
     try:
       SUDPServer.stop_server()
+      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+      sock.sendto(b"071", (ARD_UDP_IP, ARD_UDP_PORT))
+      print("Arduino gestoppt")
+      sock.close()
+      sock = None
       global mIsActive
       mIsActive = False
       GPIO.output(OUTPUT_PIN, GPIO.LOW)
@@ -157,6 +177,7 @@ class MeasurementStopApi(Resource):
       logging.error("MeasurementStopApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
+
 class MeasurementStatusApi(Resource):
   def get(self):
     try:
@@ -164,6 +185,7 @@ class MeasurementStatusApi(Resource):
     except Exception as ex:
       logging.error("MeasurementStatusApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
+
 
 class AngularErrorLoggerApi(Resource):
   def post(self):
@@ -186,6 +208,7 @@ class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
     print(message)
     VALUES.append(message)
 
+
 # This class provides a multithreaded UDP server that can receive messages sent to the defined ip and port
 class UDPServer(threading.Thread):
   server_address = ("192.168.178.153", 5100)
@@ -203,8 +226,9 @@ class UDPServer(threading.Thread):
     self.udp_server_object.shutdown()
     print("UDP server shutdown")
 
+
 class SUDPServer():
-  __server:socketserver.ThreadingUDPServer = None
+  __server: socketserver.ThreadingUDPServer = None
 
   @staticmethod
   def start_server():
@@ -224,7 +248,6 @@ class SUDPServer():
     SUDPServer.__server = UDPServer()
 
 
-
 # this adds our resources to the api
 # we define what resource we want to add and which path we would like to use
 api.add_resource(MeasurementDatabaseApi, '/measurement')
@@ -234,7 +257,5 @@ api.add_resource(MeasurementStopApi, '/stop')
 api.add_resource(MeasurementStatusApi, '/status')
 api.add_resource(AngularErrorLoggerApi, '/errorlogger')
 
-
 if __name__ == '__main__':
   app.run(debug=False, host="192.168.178.153", port=5000)
-

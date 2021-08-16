@@ -40,6 +40,7 @@ export class DBHandlerApiService {
       error => console.log(error));
   }
 
+
   /**
    * Sends a request on API to stop the measuring on the Arduino.
    * Get-Request is accessable on 192.168.178.153/stop
@@ -54,7 +55,7 @@ export class DBHandlerApiService {
    * @param lastPos means the newest received value
    */
   getNewValues(lastPos: number) {
-    return this.http.get<Messwert[]>(this.apiURL + lastPos);
+    return this.http.get<any>(this.apiURL + 'measuring');
   }
   /**
    * sends a request to the API to get all existing tables in the Database (so all done measurements)
