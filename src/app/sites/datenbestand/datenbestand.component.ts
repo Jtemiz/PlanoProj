@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {DBHandlerApiService} from '../../services/db-handler-api.service';
 import {DarkModeService} from 'angular-dark-mode';
 import {Observable} from 'rxjs';
-import {Messwert} from '../../Messwert';
+import {Messwert} from '../chart/chart.component';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EChartsOption} from 'echarts';
 import {faEye} from '@fortawesome/free-regular-svg-icons';

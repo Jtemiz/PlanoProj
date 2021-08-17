@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
-import {Messwert} from '../Messwert';
+import {Messwert} from '../sites/chart/chart.component';
 import {Messung} from '../sites/datenbestand/datenbestand.component';
 
 
@@ -55,7 +55,7 @@ export class DBHandlerApiService {
    * @param lastPos means the newest received value
    */
   getNewValues() {
-    return this.http.get<string[]>(this.apiURL + 'measurement');
+    return this.http.get<Messwert[]>(this.apiURL + 'measurement');
   }
   /**
    * sends a request to the API to get all existing tables in the Database (so all done measurements)

@@ -211,10 +211,17 @@ class SystemApi(Resource):
 # This class is a subclass of the DatagramRequestHandler and overrides the handle method
 class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
   def handle(self):
-    global VALUES
     message = self.rfile.readline().strip().decode('UTF-8')
-    print(message)
-    VALUES.append(message)
+    global VALUES
+    tmp = message.split("%")
+    tmpSplit = tmp[1].split("/")
+    data = {
+      "type": tmp[0],
+      "position": tmpSplit[0],
+      "height": tmpSplit[1].split("$")[0]
+    }
+    print(data)
+    VALUES.append(data)
 
 
 # This class provides a multithreaded UDP server that can receive messages sent to the defined ip and port
