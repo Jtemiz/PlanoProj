@@ -213,15 +213,16 @@ class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
   def handle(self):
     message = self.rfile.readline().strip().decode('UTF-8')
     global VALUES
-    tmp = message.split("%")
-    tmpSplit = tmp[1].split("/")
-    data = {
-      "type": tmp[0],
-      "position": tmpSplit[0],
-      "height": tmpSplit[1].split("$")[0]
-    }
-    print(data)
-    VALUES.append(data)
+    typeDataSplit = message.split("%")
+    if typeDataSplit[0] == "MES":
+      dataSplit = typeDataSplit[1].split("/")
+      data = {
+      "type": typeDataSplit[0],
+      "position": dataSplit[0],
+      "height": dataSplit[1].split("$")[0]
+      }
+      print(data)
+      VALUES.append(data)
 
 
 # This class provides a multithreaded UDP server that can receive messages sent to the defined ip and port
