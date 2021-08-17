@@ -90,12 +90,7 @@ export class ChartComponent implements OnInit, OnDestroy {
     // Mock dynamic data:
     this.timer = setInterval(() => {
       if (ChartComponent.runningMeasuring) {
-      return this.getValues().forEach(
-          function(mw) {
-            this.data.push(mw.position);
-            this.value.push(mw.height);
-          }
-        );
+       this.getValues();
       }
 
       // update series data:
@@ -117,24 +112,15 @@ export class ChartComponent implements OnInit, OnDestroy {
   getValues(): Messwert[] {
     return this.dbHandler.getNewValues().subscribe(data => {
       console.log(data);
-      let mws = [];
-      for (let i = 0; i < data.length; i++)
-      {
+      for (let i = 0; i < data.length; i++) {
         console.log(data[i]);
+        this.data.push(data[i].position);
+        console.log(data[i].position);
+        this.values.push(data[i].values);
       }
-      console.log(mws);
-      return mws;
     });
   }
 
-  /*
-  valueParser(valStr): Messwert {
-    const mw: Messwert = new Messwert(Number(valStr.substr(4, valStr.lastIndexOf('/'))),
-      Number(valStr.substr(valStr.lastIndexOf('/') + 1, valStr.lastIndexOf('$'))));
-    console.log("valueParser: " + mw);
-    return mw;
-  }
-   */
   changeRunningMeasuring() {
     if (!ChartComponent.runningMeasuring) {
       this.startMeasuring();
