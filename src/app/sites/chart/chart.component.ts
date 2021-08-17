@@ -86,7 +86,7 @@ export class ChartComponent implements OnInit, OnDestroy {
     // Mock dynamic data:
     this.timer = setInterval(() => {
       if (ChartComponent.runningMeasuring) {
-        this.getValues().forEach(
+      return this.getValues().forEach(
           function(mw) {
             this.data.push(mw.position);
             this.value.push(mw.height);
