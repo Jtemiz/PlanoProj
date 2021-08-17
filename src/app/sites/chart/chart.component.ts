@@ -112,20 +112,23 @@ export class ChartComponent implements OnInit, OnDestroy {
 
   getValues(): Messwert[] {
     return this.dbHandler.getNewValues().subscribe(data => {
-      console.log(data);
-      const mws = [];
+      //console.log(data);
+      let mws = [];
       data.forEach(function(str) {
         if (str.substr(0, 2) == 'MES') {
           mws.push(this.valueParser(str.substr(4)));
         }
       });
+      console.log(mws);
       return mws;
     });
   }
 
   valueParser(valStr): Messwert {
-    return new Messwert(Number(valStr.substr(4, valStr.lastIndexOf('/'))),
+    const mw: Messwert = new Messwert(Number(valStr.substr(4, valStr.lastIndexOf('/'))),
       Number(valStr.substr(valStr.lastIndexOf('/') + 1, valStr.lastIndexOf('$'))));
+    console.log("valueParser: " + mw);
+    return mw;
   }
 
   changeRunningMeasuring() {
