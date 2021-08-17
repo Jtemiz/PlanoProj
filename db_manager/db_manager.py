@@ -9,6 +9,7 @@ from flask_restful import Api, Resource, reqparse
 import threading
 import socketserver
 import socket
+import os
 
 app = Flask(__name__)
 VALUES = []
@@ -198,10 +199,17 @@ class AngularErrorLoggerApi(Resource):
       logging.error("AngularErrorLoggerApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
+class SystemApi(Resource):
+  def get(self):
+    try:
+      os.system("/var/www/html/update.sh")
+      return 'update durchgeführt', 200
+    except Exception as ex:
+      logging.error("SystemApi.get: " + str(ex) + "\n" + traceback.format_exc())
+      return 'Update konnte nicht durchgeführt werden', 500
 
 # This class is a subclass of the DatagramRequestHandler and overrides the handle method
 class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
-
   def handle(self):
     global VALUES
     message = self.rfile.readline().strip().decode('UTF-8')
@@ -256,6 +264,6 @@ api.add_resource(MeasurementStartApi, '/start')
 api.add_resource(MeasurementStopApi, '/stop')
 api.add_resource(MeasurementStatusApi, '/status')
 api.add_resource(AngularErrorLoggerApi, '/errorlogger')
-
+api.add_resource(SystemApi, '/update')
 if __name__ == '__main__':
   app.run(debug=False, host="192.168.178.153", port=5000)

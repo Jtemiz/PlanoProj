@@ -17,10 +17,12 @@ export class ChartComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   options: any;
   updateOptions: any;
-  private oneDay = 24 * 3600 * 1000;
-  private now: Date;
-  private value: number;
-  private data: any[];
+  // y-Axis
+  private value: number[];
+  // x-Axis
+  private data: number[];
+
+
   private timer: any;
   private config: ConfigComponent;
   public values: number[];
@@ -46,12 +48,6 @@ export class ChartComponent implements OnInit, OnDestroy {
       console.log('Measuring running');
     } });
      */
-    // generate some random testing data:
-
-    this.now = new Date(1997, 9, 3);
-    this.value = Math.random() * 1000;
-    // this.data.push(this.dbHandler.getValues(0));
-
     // initialize chart options:
     this.options = {
       tooltip: {
@@ -90,17 +86,19 @@ export class ChartComponent implements OnInit, OnDestroy {
     // Mock dynamic data:
     this.timer = setInterval(() => {
       if (ChartComponent.runningMeasuring) {
-        for (let i = 0; i < 5; i++) {
-          this.data.push(this.getValues());
-          //this.data.shift();
-          //this.data.push(this.getValues());
-        }
+        this.getValues().forEach(
+          function(mw) {
+            this.data.push(mw.position);
+            this.value.push(mw.height);
+          }
+        );
       }
 
       // update series data:
       this.updateOptions = {
         series: [{
-          data: this.data
+          data: this.data,
+          value: this.values
         }]
       };
     }, 1000);
@@ -115,7 +113,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   getValues(): Messwert[] {
     return this.dbHandler.getNewValues().subscribe(data => {
       console.log(data);
-      let mws = [];
+      const mws = [];
       data.forEach(function(str) {
         if (str.substr(0, 2) == 'MES') {
           mws.push(this.valueParser(str.substr(4)));
@@ -126,9 +124,8 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   valueParser(valStr): Messwert {
-    // const pos = valStr.substr(4, valStr.lastIndexOf('/'));
-    // const height = valStr.substr(valStr.lastIndexOf('/') + 1, valStr.lastIndexOf('$'));
-    return new Messwert(valStr.substr(4, valStr.lastIndexOf('/')), valStr.substr(valStr.lastIndexOf('/') + 1, valStr.lastIndexOf('$')));
+    return new Messwert(Number(valStr.substr(4, valStr.lastIndexOf('/'))),
+      Number(valStr.substr(valStr.lastIndexOf('/') + 1, valStr.lastIndexOf('$'))));
   }
 
   changeRunningMeasuring() {

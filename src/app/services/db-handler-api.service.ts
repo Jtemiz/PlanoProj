@@ -74,11 +74,15 @@ export class DBHandlerApiService {
 
   isMActive(): boolean {
     let mIsActive: boolean;
-    this.http.get<boolean>(this.apiURL + 'status').subscribe(data => (mIsActive = data));
+    return this.http.get<boolean>(this.apiURL + 'status').subscribe(data => (mIsActive = data));
     if (mIsActive == true) {
       return true;
     } else {
       return false;
     }
+  }
+
+  startUpdate(){
+    return this.http.get<any>(this.apiURL + 'update').subscribe(data => console.log(data));
   }
 }
