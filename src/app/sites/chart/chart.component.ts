@@ -24,7 +24,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   // y-Axis
   private value: number[];
   // x-Axis
-  private data: number[];
+  private data: any[];
 
 
   private timer: any;
@@ -58,8 +58,7 @@ export class ChartComponent implements OnInit, OnDestroy {
         trigger: 'axis',
         formatter: (params) => {
           params = params[0];
-          const date = new Date(params.name);
-          return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' : ' + params.value[1];
+          return params.name;
         },
         axisPointer: {
           animation: false
@@ -83,7 +82,8 @@ export class ChartComponent implements OnInit, OnDestroy {
         type: 'line',
         showSymbol: false,
         hoverAnimation: false,
-        data: this.data
+        data: this.data,
+
       }]
     };
 
@@ -113,10 +113,12 @@ export class ChartComponent implements OnInit, OnDestroy {
     return this.dbHandler.getNewValues().subscribe(data => {
       console.log(data);
       for (let i = 0; i < data.length; i++) {
-        console.log(data[i]);
-        this.data.push(data[i].position);
-        console.log(data[i].position);
-        this.values.push(data[i].values);
+        this.data.push({ name: data[i].position + ': ' + data[i].height , value: [data[i].position, data[i].height]
+        });
+       // console.log(data[i]);
+       // this.data.push(data[i].position);
+       // console.log(data[i].position);
+      //  this.values.push(data[i].values);
       }
     });
   }
