@@ -207,6 +207,7 @@ class SystemApi(Resource):
 class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
   def handle(self):
     message = self.rfile.readline().strip().decode('UTF-8')
+    print(message)
     global VALUES
     typeDataSplit = message.split("%")
     if typeDataSplit[0] == "MES":
