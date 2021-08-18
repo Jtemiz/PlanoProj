@@ -112,21 +112,14 @@ class MeasurementTableApi(Resource):
 # Contains get for sending the name of the Database-Table of the current Measurement to the Arduino
 # Contains put for sending the name of the current Measurement from the Frontend to the API
 class MeasurementStartApi(Resource):
-  # returns the current TableName, that should be written in that measurement (usual receiver: Arduino; Command: '192.168.178.153:5000/start/')
-  # --> Arduino-Command:
-  # while (true) {
-  #   (if pinX == high) {
-  #     tableName = get('192.168.178.153:5000/start/');
-  #     break;
-  #     }
-  # }
-  # while (pinX = high) {
-  # Messen, Messen, Messen!
-  # }
-
   def get(self):
     try:
-      return tableName, 200
+      # send signal to Arduino
+      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+      sock.sendto(b"070", (ARD_UDP_IP, ARD_UDP_PORT))
+      sock.close()
+      sock = None
+      return 'Arduino gestartet', 200
     except Exception as ex:
       logging.error("MeasurementStartApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
@@ -137,12 +130,6 @@ class MeasurementStartApi(Resource):
     global tableName
     global mIsActive
     try:
-      # send signal to Arduino
-      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-      sock.sendto(b"070", (ARD_UDP_IP, ARD_UDP_PORT))
-      print("Arduino gestartet")
-      sock.close()
-      sock = None
       # UDP-Receiver
       SUDPServer.start_server()
       # Create new SqlTable
@@ -216,6 +203,7 @@ class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
   def handle(self):
     message = self.rfile.readline().strip().decode('UTF-8')
     global VALUES
+    print(message)
     typeDataSplit = message.split("%")
     if typeDataSplit[0] == "MES":
       dataSplit = typeDataSplit[1].split("/")
