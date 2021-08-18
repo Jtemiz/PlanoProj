@@ -114,12 +114,20 @@ class MeasurementTableApi(Resource):
 class MeasurementStartApi(Resource):
   def get(self):
     try:
-      # send signal to Arduino
+    # Set boolean True
+      global mIsActive
+      mIsActive = True
+    # Arduino on
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       sock.sendto(b"070", (ARD_UDP_IP, ARD_UDP_PORT))
+      print("Arduino gestartet")
       sock.close()
       sock = None
-      return 'Arduino gestartet', 200
+    # UDP-Receiver on
+      SUDPServer.start_server()
+    # Light on
+      GPIO.output(OUTPUT_PIN, GPIO.HIGH)
+      return "arduino gestartet", 200
     except Exception as ex:
       logging.error("MeasurementStartApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
@@ -128,11 +136,8 @@ class MeasurementStartApi(Resource):
   def put(self):
     args = parser2.parse_args()
     global tableName
-    global mIsActive
     try:
-      # UDP-Receiver
-      SUDPServer.start_server()
-      # Create new SqlTable
+    # Create new SqlTable
       cnx = mysql_connection_pool.connection()
       cursor = cnx.cursor()
       sql = "CREATE TABLE `%s` LIKE `VALUE`;"
@@ -140,9 +145,6 @@ class MeasurementStartApi(Resource):
       cursor.close()
       cnx.close()
       tableName = args['tableName']
-      # Set boolean True
-      mIsActive = True
-      GPIO.output(OUTPUT_PIN, GPIO.HIGH)
       return args['tableName'], 200
     except Exception as ex:
       logging.error("MeasurementStartApi.put(): " + str(ex) + "\n" + traceback.format_exc())
@@ -152,14 +154,18 @@ class MeasurementStartApi(Resource):
 class MeasurementStopApi(Resource):
   def get(self):
     try:
+    # set boolean false
+      global mIsActive
+      mIsActive = False
+    # stop receiving Values
       SUDPServer.stop_server()
+    # stop Arduino
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       sock.sendto(b"071", (ARD_UDP_IP, ARD_UDP_PORT))
       print("Arduino gestoppt")
       sock.close()
       sock = None
-      global mIsActive
-      mIsActive = False
+    # Light out
       GPIO.output(OUTPUT_PIN, GPIO.LOW)
       return "Messung gestoppt", 200
     except Exception as ex:
@@ -175,7 +181,6 @@ class MeasurementStatusApi(Resource):
     except Exception as ex:
       logging.error("MeasurementStatusApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
-
 
 
 class AngularErrorLoggerApi(Resource):
@@ -203,7 +208,6 @@ class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
   def handle(self):
     message = self.rfile.readline().strip().decode('UTF-8')
     global VALUES
-    print(message)
     typeDataSplit = message.split("%")
     if typeDataSplit[0] == "MES":
       dataSplit = typeDataSplit[1].split("/")
