@@ -68,6 +68,7 @@ class MeasurementDatabaseApi(Resource):
       global VALUES
       vals = VALUES
       VALUES = []
+      print("Get angekommen")
       return vals, 200
     except Exception as ex:
       logging.error("MeasurementDatabaseApi.get(): " + str(ex) + "\n" + traceback.format_exc())
@@ -187,6 +188,7 @@ class MeasurementStatusApi(Resource):
     except Exception as ex:
       logging.error("MeasurementStatusApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
+
 
 
 class AngularErrorLoggerApi(Resource):
