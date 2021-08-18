@@ -182,6 +182,7 @@ class MeasurementStopApi(Resource):
 class MeasurementStatusApi(Resource):
   def get(self):
     try:
+      print(mIsActive)
       return mIsActive, 200
     except Exception as ex:
       logging.error("MeasurementStatusApi.get(): " + str(ex) + "\n" + traceback.format_exc())
