@@ -11,6 +11,6 @@ export class CustomErrorHandlerService extends ErrorHandler {
   handleError(error: Error) {
     // Here you can provide whatever logging you want
     this.logger.log(error.message);
-    super.handleError(error)
+    super.handleError(error);
   }
 }

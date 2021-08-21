@@ -1,8 +1,9 @@
 import {Component, OnInit, OnDestroy, Output, EventEmitter} from '@angular/core';
-import {interval, Observable, Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {ConfigComponent} from '../../config/config.component';
 import {DBHandlerApiService} from '../../services/db-handler-api.service';
 import {DarkModeService} from 'angular-dark-mode';
+
 
 export interface Messwert {
   type: string;
@@ -17,41 +18,29 @@ export interface Messwert {
 })
 
 export class ChartComponent implements OnInit, OnDestroy {
-  static runningMeasuring: boolean;
-  subscription: Subscription;
+
+  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService) {
+
+  }
+
+  runningMeasuring: boolean = (localStorage.getItem('MeasurementActive') === 'true');
+  pausedMeasuring: boolean = (localStorage.getItem('PauseActive') === 'true');
+  currentSpeed = 0;
   options: any;
   updateOptions: any;
-  // y-Axis
-  private value: number[];
   // x-Axis
   private data: any[];
-
-
   private timer: any;
   private config: ConfigComponent;
-  public values: number[];
   public comments: string[] = ['Tagesnaht', 'Verschmutzte Fahrbahn', 'Kurve', 'Bodenwelle'];
   public choosedComment = 'Kommentar hinzufügen';
   public choosedPosition: number;
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
 
-  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService) {
-    ChartComponent.runningMeasuring = dbHandler.isMActive();
-  }
-
   ngOnInit(): void {
-    /**
-     * periodical run of getValues()-method
-     * Parameter period = interval of running method getValues()
-     */
-
-    /*
-    const source = interval(2000000);
-    this.subscription = source.subscribe(val => { if (this.runningMeasuring == true) {
-      this.getValues();
-      console.log('Measuring running');
-    } });
-     */
+    if (this.runningMeasuring) {
+      this.data = JSON.parse(localStorage.getItem('CurrentMeasurementValues'));
+    }
     // initialize chart options:
     this.options = {
       tooltip: {
@@ -61,20 +50,33 @@ export class ChartComponent implements OnInit, OnDestroy {
           return params.name;
         },
         axisPointer: {
-          animation: false
+          animation: false,
         }
       },
+      dataZoom: [{
+        type: 'inside',
+        throttle: 5,
+        orient: 'horizontal',
+        zoomOnMouseWheel: true,
+        moveOnMouseMove: true
+      }],
       xAxis: {
         type: 'value',
         splitLine: {
           show: false
+        },
+        axisPointer: {
+          handle: {
+            show: true,
+            color: 'rgb(35, 109, 198)'
+          }
         }
       },
       yAxis: {
         type: 'value',
         boundaryGap: [0, '100%'],
         splitLine: {
-          show: false
+          show: true
         }
       },
       series: [{
@@ -89,42 +91,43 @@ export class ChartComponent implements OnInit, OnDestroy {
 
     // Mock dynamic data:
     this.timer = setInterval(() => {
-      if (ChartComponent.runningMeasuring) {
-       this.getValues();
+      if (this.runningMeasuring && !this.pausedMeasuring) {
+        this.getValues();
+        this.currentSpeed = Math.floor(Math.random() * (180 + 1));
       }
 
       // update series data:
       this.updateOptions = {
         series: [{
           data: this.data,
-          value: this.values
         }]
       };
-    }, 1000);
+    }, 500);
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
-    clearInterval(this.timer);
+    if (this.runningMeasuring) {
+      const dataToSave = JSON.stringify(this.data);
+      localStorage.setItem('CurrentMeasurementValues', dataToSave);
+    } else {
+      clearInterval(this.timer);
+      localStorage.removeItem('CurrentMeasurementValues');
+    }
   }
 
 
   getValues(): Messwert[] {
     return this.dbHandler.getNewValues().subscribe(data => {
-      console.log(data);
       for (let i = 0; i < data.length; i++) {
-        this.data.push({ name: data[i].position + ': ' + data[i].height , value: [data[i].position, data[i].height]
+        this.data.push({
+          name: data[i].position + ': ' + data[i].height, value: [data[i].position, data[i].height]
         });
-       // console.log(data[i]);
-       // this.data.push(data[i].position);
-       // console.log(data[i].position);
-      //  this.values.push(data[i].values);
       }
     });
   }
 
   changeRunningMeasuring() {
-    if (!ChartComponent.runningMeasuring) {
+    if (!this.runningMeasuring) {
       this.startMeasuring();
       return;
     } else {
@@ -133,45 +136,46 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   startMeasuring() {
+    this.runningMeasuring = true;
+    localStorage.setItem('MeasurementActive', 'true');
+    this.dbHandler.startArduino();
     this.dbHandler.createTable();
-    ChartComponent.runningMeasuring = true;
     this.data = [];
-    this.values = [];
   }
+
 
   setComment(str: string, at: number) {
     this.dbHandler.setComment(str, at);
   }
 
   stopMeasuring() {
-    ChartComponent.runningMeasuring = false;
+    this.pausedMeasuring = false;
+    localStorage.setItem('PauseActive', 'false');
+    this.runningMeasuring = false;
+    localStorage.setItem('MeasurementActive', 'false');
     this.dbHandler.stopArduino();
     console.log('Messung gestoppt');
   }
 
-  /**
-   * @TODO implement pauseMeasuringMethode
-   */
-  pauseMeasuring() {
-    return null;
-  }
-
-  get staticUrlMeasuring() {
-    return ChartComponent.runningMeasuring;
-  }
-
-  /*
-    randomData() {
-      this.now = new Date(this.now.getTime() + this.oneDay);
-      this.value = this.value + Math.random() * 30 - 10;
-      return {
-        name: this.now.toString(),
-        value: [
-          [this.now.getFullYear(), this.now.getMonth() + 1, this.now.getDate()].join('/'),
-          Math.round(this.value)
-        ]
-      };
+  changePauseMeasuring() {
+    if (!this.pausedMeasuring) {
+      this.pauseMeasuring();
     }
-   */
+    else if (this.pausedMeasuring) {
+      this.continueMeasuring();
+    }
+  }
+  pauseMeasuring() {
+    this.pausedMeasuring = true;
+    localStorage.setItem('PauseActive', 'true');
+    this.dbHandler.stopArduino();
+    console.log('Messung pausiert');
+  }
+  continueMeasuring() {
+    this.pausedMeasuring = false;
+    localStorage.setItem('PauseActive', 'false');
+    this.dbHandler.startArduino();
+    console.log('Messung fortgesetzt');
+  }
 }
 
