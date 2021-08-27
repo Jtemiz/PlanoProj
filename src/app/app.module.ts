@@ -8,7 +8,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {GaugeModule} from 'angular-gauge';
 import {RouteReuseStrategy} from '@angular/router';
-import {CustomReuseStrategy} from './routing';
+import {RouteReuseService} from './RouteReuseService';
 // Pages
 import {ChartComponent} from './sites/chart/chart.component';
 import {DashboardComponent} from './sites/Dashboard/dashboard.component';
@@ -16,15 +16,22 @@ import {DatenbestandComponent, NgbdModalContent} from './sites/datenbestand/date
 import {SettingsComponent} from './sites/settings/settings.component';
 import {ConfigComponent} from './config/config.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbCollapseModule} from '@ng-bootstrap/ng-bootstrap';
 import {DarkModeComponent} from './services/dark-mode/dark-mode.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DARK_MODE_OPTIONS} from 'angular-dark-mode';
 import {CustomErrorHandlerService} from './services/LogService/log.service';
 import {ApiLoggerService} from './services/LogService/api-logger.service';
+import { AlertModule } from './services/_alert';
+import {FormsModule} from '@angular/forms';
 
 const appRoutes: Routes = [
   {
-    path: 'chart', component: ChartComponent,
+    path: 'chart',
+    component: ChartComponent,
+    data: {
+      reuse: true,
+    }
   },
   {
     path: '', component: DashboardComponent
@@ -51,27 +58,31 @@ const appRoutes: Routes = [
     DarkModeComponent,
     NgbdModalContent,
   ],
-  imports: [
-    GaugeModule.forRoot(),
-    FontAwesomeModule,
-    FlexLayoutModule,
-    BrowserModule,
-    HttpClientModule,
-    NgxEchartsModule.forRoot({
-      echarts: () => import('echarts'),
-    }),
-    RouterModule.forRoot(
-      appRoutes,
-      {enableTracing: true} // <-- debugging purposes only
-    ),
-    NgbModule,
-    BrowserAnimationsModule,
-    FontAwesomeModule,
-  ],
+    imports: [
+        NgbCollapseModule,
+        GaugeModule.forRoot(),
+        FontAwesomeModule,
+        FlexLayoutModule,
+        BrowserModule,
+        HttpClientModule,
+        NgxEchartsModule.forRoot({
+            echarts: () => import('echarts'),
+        }),
+        RouterModule.forRoot(
+            appRoutes,
+            {enableTracing: false} // <-- debugging purposes only
+        ),
+        NgbModule,
+        BrowserAnimationsModule,
+        FontAwesomeModule,
+        AlertModule,
+        FormsModule
+
+    ],
   providers: [
     ApiLoggerService, {
       provide: RouteReuseStrategy,
-      useClass: CustomReuseStrategy
+      useClass: RouteReuseService
     },
     {
       provide: ErrorHandler,
@@ -88,5 +99,3 @@ const appRoutes: Routes = [
 })
 export class AppModule {
 }
-
-

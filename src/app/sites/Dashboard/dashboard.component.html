@@ -1,67 +1,40 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>APS-Dashboard</title>
 </head>
-<body style="position: center; background: none">
-<header>
-  <nav class="navbar navbar-expand-xl fixed-top" [ngClass]="(darkMode$ | async)? 'navbar-dark, bg-dark' : 'navbar-light, bg-light'">
-    <div class="container-fluid">
-      <a class="navbar-brand custom-navbar-brand" href="#"><img src="assets/logo.png" height="39"></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-              aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse ml-auto" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link" href="/chart">Messung</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link" href="/data">Datenbestand</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link" href="/settings">Einstellungen</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</header>
-
+<body>
 <div class='container custom-container'>
   <div class="jumbotron" [ngClass]="(darkMode$ | async)? 'text-white, bg-dark': 'text-dark, bg-white'">
-  <div class="card-group">
-    <div class="card">
-      <img src="assets/Messung1.jpg" class="card-img-top" routerLink="/chart">
-      <div class="card-body">
-        <h2 class="card-title">Neue Messung</h2>
-        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    <div class="card-group">
+      <div class="card">
+        <img src="assets/Messung1.jpg" class="card-img-top" routerLink="/chart">
+        <div class="card-body">
+          <h2 class="card-title">Neue Messung</h2>
+          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional
+            content. This content is a little bit longer.</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="assets/db.png" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h2 class="card-title">Datenbestand</h2>
+          <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="assets/settings.png" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h2 class="card-title">Einstellungen</h2>
+          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional
+            content. This card has even longer content than the first to show that equal height action.</p>
+        </div>
       </div>
     </div>
-    <div class="card">
-      <img src="assets/db.png" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h2 class="card-title">Datenbestand</h2>
-        <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-      </div>
-    </div>
-    <div class="card">
-      <img src="assets/settings.png" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h2 class="card-title">Einstellungen</h2>
-        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
-      </div>
-    </div>
-  </div>
   </div>
 </div>
 </body>
 </html>
 <app-dark-mode style="display: none"></app-dark-mode>
+

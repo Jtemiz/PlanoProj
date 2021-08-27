@@ -1,7 +1,6 @@
 import logging
 import traceback
 import pymysql.cursors
-import RPi.GPIO as GPIO
 from dbutils.persistent_db import PersistentDB
 from flask import Flask
 from flask_cors import CORS, cross_origin
@@ -19,56 +18,75 @@ api = Api(app)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-mIsActive = False
-tableName = "tablenameString"
-global postArray
+MEASUREMENT_IS_ACTIVE = False
+TABLENAME = ''
+
+# UDP-Connection to the Arduino
+udpServer = None
+ARD_UDP_IP_RECEIVE = "192.168.4.2"
+ARD_UDP_PORT_RECEIVE = 9000
+ARD_UDP_IP_SEND = "192.168.4.1"
+ARD_UDP_PORT_SEND = 5100
+
 # connection to mysql database
 db_config = {
-  'host': '192.168.4.1',
+  'host': '192.168.178.153',
   'user': 'messmodul',
   'password': 'Jockel01.',
   'database': 'MESSDATEN',
   'connect_timeout': 5
 }
 
+# Configuration to setup a persistent database-connection
 mysql_connection_pool = PersistentDB(
   creator=pymysql,
   **db_config
 )
 
-udpServer = None
-ARD_UDP_IP = "192.168.178.146"
-ARD_UDP_PORT = 9000
 # arg parser for API (running Measurement)
-parser = reqparse.RequestParser()
-parser.add_argument('kommentar', required=True, help='argument required')
-parser.add_argument('position', type=int, required=False, help='argument required')
+commentParser = reqparse.RequestParser()
+commentParser.add_argument('kommentar', required=True, help='argument required')
+commentParser.add_argument('position', type=int, required=True, help='argument required')
 
 # arg parser for API3 (creating Table)
-parser2 = reqparse.RequestParser()
-parser2.add_argument('tableName', type=int, required=True, help='argument required')
+tableCreateParser = reqparse.RequestParser()
+tableCreateParser.add_argument('tableName', type=int, required=True, help='argument required')
 
 # arg parser for Angular Exception Logging
-parser3 = reqparse.RequestParser()
-parser3.add_argument('errorMessage', type=str, required=True, help='error message required')
+exceptionParser = reqparse.RequestParser()
+exceptionParser.add_argument('errorMessage', type=str, required=True, help='error message required')
 
+metaDataParser = reqparse.RequestParser()
+metaDataParser.add_argument('place', type=str, required=False)
+metaDataParser.add_argument('distance', type=float, required=True, help='distance required')
+metaDataParser.add_argument('user', type=str, required=False)
+
+
+
+# TODO no longer in use
 # RPi.GPIO setup
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
-OUTPUT_PIN = 23
-GPIO.setup(OUTPUT_PIN, GPIO.OUT)
+#GPIO.setwarnings(False)
+#GPIO.setmode(GPIO.BCM)
+#OUTPUT_PIN = 23
+#GPIO.setup(OUTPUT_PIN, GPIO.OUT)
 
 
-# Contains get for send new Values to the Frontend
-# Contains put for setting Comments in the Database while Measuring
+# Contains GET for send new Values to the Frontend and insert them in right database-table
+# Contains PUT for setting Comments in the Database while Measuring
 class MeasurementDatabaseApi(Resource):
+  # TODO check if executemany works
   # used for the Chart to show all new Values
+  # Inserts the requested data into the database-table 'tableName'
   def get(self):
     try:
       global VALUES
       vals = VALUES
       VALUES = []
       print("Get angekommen")
+      cnx = mysql_connection_pool.connection()
+      cursor = cnx.cursor()
+      sql = "INSERT INTO %s (`position`, HOEHE) VALUES (%s, %s)"
+      cursor.executemany(sql, (TABLENAME, vals))
       return vals, 200
     except Exception as ex:
       logging.error("MeasurementDatabaseApi.get(): " + str(ex) + "\n" + traceback.format_exc())
@@ -77,37 +95,55 @@ class MeasurementDatabaseApi(Resource):
   # used while the Measurement for adding comments on the database
   def put(self):
     try:
-      args = parser.parse_args()
+      args = commentParser.parse_args()
       cnx = mysql_connection_pool.connection()
       cursor = cnx.cursor()
-      sql = "UPDATE `VALUE` SET `KOMMENT`=%s WHERE `POSITION`=%s;"
-      cursor.execute(sql, (args['kommentar'], args['position']))
+      sql = "INSERT INTO `comments` VALUES (%s, %s,%s)"
+      cursor.execute(sql, (TABLENAME, args['position'], args['kommentar']))
       cnx.commit()
       cursor.close()
       cnx.close()
-      return 'Data updated', 200
+      print("comment geadded")
+      return 'Comment loaded into comments', 200
     except Exception as ex:
-      logging.error("MeasurementDatabaseApi.put(): " + str(ex) + "\n" + traceback.format_exc())
-      return 'Verbindungsfehler', 500
+      if ("Duplicate entry" in str(ex)):
+        try:
+          args = commentParser.parse_args()
+          cnx = mysql_connection_pool.connection()
+          cursor = cnx.cursor()
+          sql = "UPDATE `comments` SET `comment`=%s WHERE `measurement`=%s AND `position`=%s"
+          cursor.execute(sql, (args['kommentar'], TABLENAME, args['position']))
+          cnx.commit()
+          cursor.close()
+          cnx.close()
+          print("Kommentar geupdatet")
+          return 'Comment updated', 200
+        except Exception as ex:
+          print(ex)
+          return "Verb-Fehler", 500
 
 
 class MeasurementTableApi(Resource):
   # used for "Datenbestand" to show all avaiable Data-Tables
   def get(self):
     try:
+      print('TableApi')
       cnx = mysql_connection_pool.connection()
       cursor = cnx.cursor()
-      sql = "SHOW TABLES FROM MESSDATEN"
+      sql = "SELECT * FROM `metadata` ORDER BY `measurement`"
       cursor.execute(sql, )
       result = cursor.fetchall()
       cursor.close()
       cnx.close()
+      print(result)
       return result, 200
     except Exception as ex:
+      print('ErrorTableApi')
       logging.error("MeasurementTableApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
 
+# TODO GPIO no longer in use
 # Class for Starting the Measurement
 # Contains get for sending the name of the Database-Table of the current Measurement to the Arduino
 # Contains put for sending the name of the current Measurement from the Frontend to the API
@@ -115,60 +151,83 @@ class MeasurementStartApi(Resource):
   def get(self):
     try:
     # Set boolean True
-      global mIsActive
-      mIsActive = True
+      global MEASUREMENT_IS_ACTIVE
+      MEASUREMENT_IS_ACTIVE = True
     # Arduino on
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-      sock.sendto(b"070", (ARD_UDP_IP, ARD_UDP_PORT))
+      sock.sendto(b"070", (ARD_UDP_IP_RECEIVE, ARD_UDP_PORT_SEND))
       print("Arduino gestartet")
       sock.close()
-      sock = None
     # UDP-Receiver on
       SUDPServer.start_server()
     # Light on
-      GPIO.output(OUTPUT_PIN, GPIO.HIGH)
+     # GPIO.output(OUTPUT_PIN, GPIO.HIGH)
       return "arduino gestartet", 200
     except Exception as ex:
       logging.error("MeasurementStartApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
-  # used for getting the tableName from the Frontend to the API
+  # used for getting the tableName from the Frontend to the API and create a new table in the Database named "TABLENAME"
   def put(self):
-    args = parser2.parse_args()
-    global tableName
+    args = tableCreateParser.parse_args()
+    global TABLENAME
     try:
     # Create new SqlTable
       cnx = mysql_connection_pool.connection()
       cursor = cnx.cursor()
-      sql = "CREATE TABLE `%s` LIKE `VALUE`;"
+      sql = "CREATE TABLE `%s` LIKE `ExampleTable`;"
       cursor.execute(sql, (args['tableName']))
       cursor.close()
       cnx.close()
-      tableName = args['tableName']
+      TABLENAME = args['tableName']
       return args['tableName'], 200
     except Exception as ex:
+      print(ex)
       logging.error("MeasurementStartApi.put(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
-
+# TODO reset Position-Counter in Arduino (in MeasurementStartApi or here?)
+# TODO GPIO no longer in use
+# Contains GET for sending stop-signal from Frontend to the API and Arduino
 class MeasurementStopApi(Resource):
   def get(self):
     try:
+      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+      sock.sendto(b"073", (ARD_UDP_IP_RECEIVE, ARD_UDP_PORT_SEND))
+      print("Arduino: Kilometer resettet")
+      sock.close()
+      return "Arduino: Kilometer resettet", 200
+    except Exception as ex:
+      logging.error("MeasurementStopApi.get(): " + str(ex) + "\n" + traceback.format_exc())
+      return 'Verbindungsfehler', 500
+
+  def put(self):
+    try:
     # set boolean false
-      global mIsActive
-      mIsActive = False
+      global MEASUREMENT_IS_ACTIVE
+      MEASUREMENT_IS_ACTIVE = False
     # stop receiving Values
       SUDPServer.stop_server()
     # stop Arduino
-      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-      sock.sendto(b"071", (ARD_UDP_IP, ARD_UDP_PORT))
-      print("Arduino gestoppt")
-      sock.close()
-      sock = None
+     # sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #  sock.sendto(b"071", (ARD_UDP_IP, ARD_UDP_PORT))
+     # print("Arduino gestoppt")
+     # sock.close()
     # Light out
-      GPIO.output(OUTPUT_PIN, GPIO.LOW)
+     # GPIO.output(OUTPUT_PIN, GPIO.LOW)
+    # add MetaData to Table
+      print("start inserting")
+      args = metaDataParser.parse_args()
+      cnx = mysql_connection_pool.connection()
+      cursor = cnx.cursor()
+      sql = "INSERT INTO `metadata` VALUES (%s, %s, %s, %s)"
+      cursor.execute(sql, (TABLENAME, args['place'], args['distance'], args['user']))
+      cnx.commit()
+      cursor.close()
+      cnx.close()
       return "Messung gestoppt", 200
     except Exception as ex:
+      print(ex)
       logging.error("MeasurementStopApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
@@ -176,17 +235,18 @@ class MeasurementStopApi(Resource):
 class MeasurementStatusApi(Resource):
   def get(self):
     try:
-      print(mIsActive)
-      return mIsActive, 200
+      print(MEASUREMENT_IS_ACTIVE)
+      return MEASUREMENT_IS_ACTIVE, 200
     except Exception as ex:
       logging.error("MeasurementStatusApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
-
+# used for receiving Exceptions from Frontend
 class AngularErrorLoggerApi(Resource):
+  # receives Exections from Angular-Frontend and loggs them to db_manager.log
   def post(self):
     try:
-      args = parser3.parse_args()
+      args = exceptionParser.parse_args()
       print(args['errorMessage'])
       logging.error("Angular Exception: " + str(args['errorMessage']))
       return 'Fehler geloggt', 200
@@ -194,7 +254,9 @@ class AngularErrorLoggerApi(Resource):
       logging.error("AngularErrorLoggerApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
+# used for starting updates
 class SystemApi(Resource):
+  #starts local shell-script to update the API & Frontend
   def get(self):
     try:
       os.system("/var/www/html/update.sh")
@@ -203,6 +265,9 @@ class SystemApi(Resource):
       logging.error("SystemApi.get: " + str(ex) + "\n" + traceback.format_exc())
       return 'Update konnte nicht durchgeführt werden', 500
 
+
+# TODO: Implement methode that checks if all measured data were received (Counter)
+# TODO: Add speed-Value
 # This class is a subclass of the DatagramRequestHandler and overrides the handle method
 class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
   def handle(self):
@@ -223,20 +288,23 @@ class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
 
 # This class provides a multithreaded UDP server that can receive messages sent to the defined ip and port
 class UDPServer(threading.Thread):
-  server_address = ("192.168.4.1", 5100)
+  server_address = (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND)
   udp_server_object = None
 
   def run(self):
-    print("Server gestartet")
     try:
       self.udp_server_object = socketserver.ThreadingUDPServer(self.server_address, MyUDPRequestHandler)
       self.udp_server_object.serve_forever()
+      print("Server gestartet")
     except:
       pass
 
   def stop(self):
-    self.udp_server_object.shutdown()
-    print("UDP server shutdown")
+    try:
+      self.udp_server_object.shutdown()
+      print("UDP server shutdown")
+    except:
+      pass
 
 
 class SUDPServer():
@@ -269,5 +337,7 @@ api.add_resource(MeasurementStopApi, '/stop')
 api.add_resource(MeasurementStatusApi, '/status')
 api.add_resource(AngularErrorLoggerApi, '/errorlogger')
 api.add_resource(SystemApi, '/update')
+
+# TODO adapt IP to productionMode
 if __name__ == '__main__':
-  app.run(debug=False, host="192.168.4.1", port=5000)
+  app.run(debug=False, host='192.168.178.153', port=5000)

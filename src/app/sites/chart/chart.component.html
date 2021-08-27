@@ -5,61 +5,32 @@
   <title>Messung</title>
 </head>
 <body>
-<header>
-  <nav class="navbar navbar-expand-lg fixed-top"
-       [ngClass]="(darkMode$ | async)? 'navbar-dark, bg-dark' : 'navbar-light, bg-light'">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#"><img src="assets/logo.png" height="39"></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-              aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link" href="/chart">Messung</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link" href="/data">Datenbestand</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link" href="/settings">Einstellungen</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</header>
-
-
 <div class='container custom-container'>
   <div class="jumbotron jumbotron-fluid" [ngClass]="(darkMode$ | async)? 'text-white, bg-dark': 'text-dark, bg-white'">
     <div class="content container">
-      <div class="row">
-        <div class="col-9">
+      <div class="row" id="chartRow">
+        <div class="col">
           <div echarts [options]="options" [merge]="updateOptions" class="demo-chart custom-chart"></div>
         </div>
-        <div class="col-3 btn-group-vertical" id="col1">
-          <div style="height: 100px"></div>
-          <button type="button" class="btn" [ngClass]="(runningMeasuring) ? 'btn-danger' : 'btn-success'"
-                  (click)="changeRunningMeasuring()"></button>
-          <button type="button" class="btn btn-warning" *ngIf="runningMeasuring" (click)="changePauseMeasuring()">
-            Messung
-            pausieren
+      </div>
+      <div class="row" id="btnRow">
+        <div class="col-3">
+          <button class="btn btn-success btn-lg" *ngIf="!runningMeasuring"
+                  (click)="changeRunningMeasuring()">
+            Start
           </button>
-          <div class="input-group mb-3" style="margin-top: 4px" *ngIf="runningMeasuring">
-            <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Kommentar">
-            <datalist id="datalistOptions">
-              <ng-container *ngFor="let comment of comments; let i=index">
-                <option value="{{comment}}">
-              </ng-container>
-            </datalist>
-            <button class="btn btn-outline-secondary" type="button" id="button-addon2"><img
-              src="assets/chat-right-quote-fill.svg"></button>
-          </div>
+            <button class="btn btn-danger btn-lg" *ngIf="runningMeasuring"
+                    (click)="changeRunningMeasuring()">
+              Stop
+            </button>
+        </div>
+        <div class="col-3">
+          <button type="button" class="btn btn-warning btn-lg" *ngIf="runningMeasuring"
+                  (click)="changePauseMeasuring()">
+            Pause
+          </button>
+        </div>
+        <div class="col-6" id="GaugeCommentCol">
           <mwl-gauge
             [min]="0"
             [max]="100"
@@ -70,10 +41,20 @@
             [animationDuration]="1"
             *ngIf="runningMeasuring"
           ></mwl-gauge>
+          <div class="input-group mb-3" id="CommentGroup" *ngIf="runningMeasuring">
+            <input [(ngModel)]="choosedComment" class="form-control" list="datalistOptions" id="commentInput" placeholder="Kommentar" (keyup.enter)="setComment(choosedComment, 50)">
+            <datalist id="datalistOptions">
+              <ng-container *ngFor="let comment of comments; let i=index">
+                <option value="{{comment.comment}}">
+              </ng-container>
+            </datalist>
+            <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="setComment(choosedComment, 50)"><img
+              src="assets/chat-right-quote-fill.svg"></button>
+          </div>
         </div>
       </div>
+      <h1>{{choosedComment}}</h1>
     </div>
-
     <img id="hochformat" src="assets/rotatePhone.gif" style="display: none"/>
   </div>
 </div>
@@ -82,33 +63,6 @@
 </html>
 
 
-<!--
-<div class="btn-group mr-3" *ngIf="staticUrlMeasuring" style="max-width: 20%">
-  <button type="button" class="btn btn-primary" (click)="setComment(choosedComment, choosedPosition)">{{choosedComment}}</button>
-  <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
-    <button class="btn btn-primary dropdown-toggle-split" ngbDropdownToggle></button>
-    <div class="dropdown-menu" ngbDropdownMenu >
-      <ng-container *ngFor="let comment of comments;let i=index">
-        <button ngbDropdownItem (click)="choosedComment = comment">{{comment}}</button>
-      </ng-container>
-    </div>
-  </div>
-</div>
-</div>
-<div class="container">
-<button (click)="startMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonStart"> Messung Starten </button>
-<button (click)="pauseMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonPause" > Messung pausieren </button>
-<button (click) ="stopMeasuring()" [ngClass]="(darkMode$ | async)? 'button-dark' : 'button-light'" id="buttonStop" > Messung beenden </button>
-<div class="btn-group mr-3">
-  <button type="button" class="btn btn-outline-success" (click)="setComment(choosedComment, choosedPosition)">{{choosedComment}}</button>
-  <div class="btn-group" ngbDropdown role="group">
-    <button class="btn btn-outline-primary" ngbDropdownToggle>Markierungen</button>
-
-    </div>
-  </div>
-</div>
-</div>
--->
 
 
 

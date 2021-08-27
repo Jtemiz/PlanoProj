@@ -1,10 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, distinctUntilChanged, map, startWith} from 'rxjs/operators';
-import {Messwert} from '../sites/chart/chart.component';
-import {Messung} from '../sites/datenbestand/datenbestand.component';
-import {Observable} from 'rxjs/dist/types';
-import {dataColorPaletteTask} from 'echarts/types/src/visual/style';
+import {Messwert, Metadata} from '../Messwert';
+import {AlertService} from './_alert';
 
 
 @Injectable({
@@ -13,18 +11,18 @@ import {dataColorPaletteTask} from 'echarts/types/src/visual/style';
 
 export class DBHandlerApiService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, public alert: AlertService) {
+  }
 
-  public messwert: Messwert[];
-  private apiURL = 'http://192.168.4.1:5000/';
+  // TODO: change IP adress to real Production IP
+  private apiURL = 'http://192.168.178.153:5000/';
 
   /**
    * Sends a request to the API to set an comment on an specific position of the measurement.
    * Put-Request accessable on 192.168.178.153/ with body [kommentar: string, position: int]
    */
   setComment(str: string, at: number) {
-    return this.http.put<any>(this.apiURL, {kommentar: str, position: at})
-      .subscribe(data => console.log(data));
+    return this.http.put<any>(this.apiURL + 'measurement', {kommentar: str, position: at});
   }
 
   /**
@@ -41,19 +39,35 @@ export class DBHandlerApiService {
       + ('0' + date.getSeconds()).slice(-2);
     console.log('tableName generated ' + tabN);
     return this.http.put<any>(this.apiURL + 'start', {tableName: tabN}).subscribe(data => console.log('created new table: ' + tabN + '; Return Value = ' + data),
-      error => console.log(error));
+      err => {
+        console.log(err);
+        this.alert.error('Probleme in der Datenbankverbindung: Speicherung der Daten nicht möglich.');
+      }
+    );
   }
 
-  startArduino(){
-    return this.http.get(this.apiURL + 'start').subscribe(data => console.log(data));
+  startArduino() {
+    return this.http.get(this.apiURL + 'start').subscribe(data => console.log(data),
+      err => {
+      console.log(err);
+      this.alert.error('Probleme in der Verbindung zum Messmodul: Messmodul konnte nicht gestartet werden.');
+      });
   }
 
   /**
    * Sends a request on API to stop the measuring on the Arduino.
    * Get-Request is accessable on 192.168.178.153/stop
    */
-  stopArduino() {
-    return this.http.get(this.apiURL + 'stop').subscribe(data => console.log(data));
+  stopArduino(plc: string, dist: number, usr: string) {
+    return this.http.put(this.apiURL + 'stop', {
+      place: plc,
+      distance: dist,
+      user: usr
+    }).subscribe(data => console.log(data),
+      err => {
+      console.log(err);
+      this.alert.error('Probleme in der Verbindung zum Messmodul: Messmodul konnte nicht gestoppt werden.');
+    });
   }
 
   /**
@@ -70,20 +84,20 @@ export class DBHandlerApiService {
    * Get-request is accessable on 192.168.178.153/management
    */
   getAllTables() {
-    return this.http.get<Messung[]>(this.apiURL + 'management');
+     return this.http.get<Metadata>(this.apiURL + 'tables');
   }
 
   /**
    * @TODO
    */
   getTable(tableName: string) {
-    return this.http.get<Messwert[]>(this.apiURL + 'datenbestand/' + tableName);
+    return this.http.get<Messwert[]>(this.apiURL + 'datenbestand/' + tableName)
   }
 
   isMActive(): boolean {
     return this.http.get<boolean>(this.apiURL + 'status').pipe(startWith(false)).subscribe(data => {
-      console.log("db_handler" + data)
-      return data;
+        console.log('db_handler' + data);
+        return data;
       }
     );
   }

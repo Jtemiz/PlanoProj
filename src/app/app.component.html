@@ -1,1 +1,27 @@
+<header>
+  <nav class="navbar navbar-expand-xl fixed-top py-4"
+       [ngClass]="(darkMode$ | async)? 'navbar-dark bg-dark' : 'navbar-light bg-light'">
+    <a class="navbar-brand" href="#"><img src="assets/logo.png" height="39"></a>
+    <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse custom-navbar" id="navbarNavDropdown" [ngbCollapse]="isCollapsed">
+      <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link" href="/chart">Messung</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link" href="/data">Datenbestand</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link" href="/settings">Einstellungen</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>
+<alert class="fixed-bottom"></alert>
 <router-outlet></router-outlet>

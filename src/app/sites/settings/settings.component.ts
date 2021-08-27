@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import {DarkModeComponent} from '../../services/dark-mode/dark-mode.component';
 import {DarkModeService} from 'angular-dark-mode';
 import {Observable} from 'rxjs';
 import {DBHandlerApiService} from '../../services/db-handler-api.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,9 @@ import {DBHandlerApiService} from '../../services/db-handler-api.service';
 })
 export class SettingsComponent {
   title = 'Settings';
-  constructor(private darkModeService: DarkModeService, private dbHandlerApiService: DBHandlerApiService) {}
+  constructor(private darkModeService: DarkModeService, private dbHandlerApiService: DBHandlerApiService, private titleService: Title) {
+    this.titleService.setTitle('APS - Einstellungen');
+  }
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
   public isCollapsed = true;
 

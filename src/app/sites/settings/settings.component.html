@@ -2,37 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>APS-Settings</title>
 </head>
 <body style="background: none">
-<header>
-  <nav class="navbar navbar-expand-lg"
-       [ngClass]="(darkMode$ | async)? 'navbar-dark, bg-dark' : 'navbar-light, bg-light'">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#"><img src="assets/logo.png" height="39"></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-              aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link" href="/chart">Messung</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link" href="/data">Datenbestand</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link" href="/settings">Einstellungen</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</header>
 <div class='container custom-container'>
   <div class="jumbotron jumbotron-fluid" [ngClass]="(darkMode$ | async)? 'text-white, bg-dark': 'text-dark, bg-white'">
     <table class="table-sm" [ngClass]="(darkMode$ | async) ? 'table-dark': ''">
@@ -49,7 +21,7 @@
           Versionsnummer
         </th>
         <th>
-          FE1.1AP1BE1
+          FE1AP1BE1
         </th>
       </tr>
       <tr>
@@ -61,25 +33,28 @@
             <button type="button" class="btn btn-outline-primary" (click)="collapse.toggle()"
                     [attr.aria-expanded]="!isCollapsed"
                     aria-controls="collapseExample">
-              Toggle
+              Information zum Update
             </button>
-            <button (click)="updateRpi()"></button>
           </p>
           <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
-            <div class="card">
-              <div class="card-body">
-                <h3 class="font-weight-bolder"> APS ist via Ethernet mit Ihnen verbunden </h3>
-                Starten Sie den Updatevorgang.
-                Sobald Sie dazu aufgefordert werden, entfernen Sie das Ethernet-Kabel aus Ihrem Gerät. <br/>
-                Verbinden Sie den APS mit dem Internet und halten die Verbindung.<br/>
-                Sobald die Signallampe des APS aufhört zu leuchten, ist das Update abgeschlossen.<br/>
+            <div class="card-body">
+              <h2>Voraussetzung:</h2>
+              Internetverbindung via Ethernet-Leitung
 
-                <h3> APS ist via WLAN mit Ihnen verbunden</h3>
-                Starten Sie den Updatevorgang.<br/>
-                Trennen Sie die WLAN-Verbindung zum APS, sobald Sie dazu aufgefordert werden.<br/>
-                Verbinden Sie den APS mit dem Internet und halten die Verbindung.<br/>
-                Sobald die Signallampe des APS aufhört zu leuchten, ist das Update abgeschlossen.
-              </div>
+              <h2>Hinweis</h2>
+              <p>Lesen Sie die Anleitung vollständig durch bevor Sie das Update starten. </p>
+              <h2><b>Ablauf</b></h2>
+              <p>
+                Klicken Sie auf den orangen "Update durchführen"-Button.<br/>
+                Verbinden Sie den APS darauffolgend mit dem Internet, indem Sie innerhalb von 30 Sekunden das
+                Ethernetkabel in den passenden Port stecken <br/>
+                Sofern der APS mit dem Internet verbunden ist, führt er das Update selbstständig durch.<br/>
+                Andernfalls wird das Programm lediglich neu initialisiert.<br/>
+                Sobald die Signallampe des APS aufhört zu leuchten, ist das Update abgeschlossen.<br/>
+                Sowohl das Update als auch die Neu-Initialisierung können abhängig von der Versionsnummer des Gerätes
+                2-10 Minuten in Anspruch nehmen. <br/>
+              </p>
+              <button class="btn-warning" (click)="updateRpi()"> Update starten</button>
             </div>
           </div>
         </th>

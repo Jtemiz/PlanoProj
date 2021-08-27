@@ -3,13 +3,10 @@ import {Observable, Subscription} from 'rxjs';
 import {ConfigComponent} from '../../config/config.component';
 import {DBHandlerApiService} from '../../services/db-handler-api.service';
 import {DarkModeService} from 'angular-dark-mode';
+import {Title} from '@angular/platform-browser';
+import {AlertService} from '../../services/_alert';
+import {Messwert} from '../../Messwert';
 
-
-export interface Messwert {
-  type: string;
-  position: number;
-  height: number;
-}
 
 @Component({
   selector: 'app-basic-update',
@@ -19,11 +16,11 @@ export interface Messwert {
 
 export class ChartComponent implements OnInit, OnDestroy {
 
-  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService) {
-
+  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private titleService: Title, public alert: AlertService) {
+    this.titleService.setTitle('APS - Messung');
   }
 
-  runningMeasuring: boolean = (localStorage.getItem('MeasurementActive') === 'true');
+  runningMeasuring = (localStorage.getItem('MeasurementActive') === 'true');
   pausedMeasuring: boolean = (localStorage.getItem('PauseActive') === 'true');
   currentSpeed = 0;
   options: any;
@@ -32,15 +29,17 @@ export class ChartComponent implements OnInit, OnDestroy {
   private data: any[];
   private timer: any;
   private config: ConfigComponent;
-  public comments: string[] = ['Tagesnaht', 'Verschmutzte Fahrbahn', 'Kurve', 'Bodenwelle'];
-  public choosedComment = 'Kommentar hinzufügen';
-  public choosedPosition: number;
+  public comments: [] = JSON.parse(localStorage.getItem('comments'))
+  public choosedComment;
+  public choosedPosition = 10;
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
+  public isCollapsed = true;
 
   ngOnInit(): void {
-    if (this.runningMeasuring) {
-      this.data = JSON.parse(localStorage.getItem('CurrentMeasurementValues'));
-    }
+
+    //if (this.runningMeasuring) {
+    //  this.data = JSON.parse(localStorage.getItem('CurrentMeasurementValues'));
+    // }
     // initialize chart options:
     this.options = {
       tooltip: {
@@ -102,7 +101,7 @@ export class ChartComponent implements OnInit, OnDestroy {
           data: this.data,
         }]
       };
-    }, 500);
+    }, 10000);
   }
 
   ngOnDestroy() {
@@ -138,14 +137,9 @@ export class ChartComponent implements OnInit, OnDestroy {
   startMeasuring() {
     this.runningMeasuring = true;
     localStorage.setItem('MeasurementActive', 'true');
-    this.dbHandler.startArduino();
     this.dbHandler.createTable();
+    this.dbHandler.startArduino();
     this.data = [];
-  }
-
-
-  setComment(str: string, at: number) {
-    this.dbHandler.setComment(str, at);
   }
 
   stopMeasuring() {
@@ -153,29 +147,62 @@ export class ChartComponent implements OnInit, OnDestroy {
     localStorage.setItem('PauseActive', 'false');
     this.runningMeasuring = false;
     localStorage.setItem('MeasurementActive', 'false');
-    this.dbHandler.stopArduino();
+    this.dbHandler.stopArduino('Place', 12.518, 'Joel Temiz');
     console.log('Messung gestoppt');
+  }
+
+  setComment(str: string, at: number) {
+    this.dbHandler.setComment(str, at).subscribe(data => {
+        console.log(data);
+        this.storeCommentInLocalStorage(str);
+        this.choosedComment = '';
+      },
+      err => {
+        console.log(err);
+        return this.alert.error('Fehler in der Datenbank-Verbindung: Kommentar konnte nicht hinzugefügt werden.');
+      });
   }
 
   changePauseMeasuring() {
     if (!this.pausedMeasuring) {
       this.pauseMeasuring();
-    }
-    else if (this.pausedMeasuring) {
+    } else if (this.pausedMeasuring) {
       this.continueMeasuring();
     }
   }
+
   pauseMeasuring() {
     this.pausedMeasuring = true;
     localStorage.setItem('PauseActive', 'true');
-    this.dbHandler.stopArduino();
+    //  this.dbHandler.stopArduino();
     console.log('Messung pausiert');
   }
+
   continueMeasuring() {
     this.pausedMeasuring = false;
     localStorage.setItem('PauseActive', 'false');
     this.dbHandler.startArduino();
     console.log('Messung fortgesetzt');
+  }
+
+  storeCommentInLocalStorage(value) {
+    const entry = {
+      comment: value
+    };
+    let existingEntries = JSON.parse(localStorage.getItem('comments'));
+    if (existingEntries == null) {
+      existingEntries = [];
+      localStorage.setItem('comments', JSON.stringify(entry));
+    } else {
+      for (let i = 0; i < existingEntries.length; i++) {
+        if (existingEntries[i].comment == value) {
+          return;
+        }
+      }
+    }
+    existingEntries.push(entry);
+    localStorage.setItem('comments', JSON.stringify(existingEntries));
+    this.comments = JSON.parse(localStorage.getItem('comments'));
   }
 }
 

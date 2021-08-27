@@ -55,19 +55,6 @@
   }
 }
 
-#button1:hover {
-  background-image: url("src/assets/Messung1.jpg");
-}
-
-
-#button2:hover {
-  background-image: url("src/assets/db.png");
-}
-
-#button3:hover {
-  background-image: url("src/assets/settings.png");
-
-}
 
 .card {
   margin: 10px;
@@ -83,9 +70,7 @@
   margin: 80px auto;
   width: 50%;
 }
-.card-img-top:hover {
 
-}
 .card-img-top {
   transition-duration: 0.5s;
 }

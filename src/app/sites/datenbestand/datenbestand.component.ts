@@ -2,11 +2,13 @@ import {Component, Input, OnInit} from '@angular/core';
 import {DBHandlerApiService} from '../../services/db-handler-api.service';
 import {DarkModeService} from 'angular-dark-mode';
 import {Observable} from 'rxjs';
-import {Messwert} from '../chart/chart.component';
+import {Messwert} from '../../Messwert';
+import {Metadata} from '../../Messwert';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EChartsOption} from 'echarts';
 import {faEye} from '@fortawesome/free-regular-svg-icons';
 import {FaIconLibrary} from '@fortawesome/angular-fontawesome';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -27,7 +29,8 @@ import {FaIconLibrary} from '@fortawesome/angular-fontawesome';
 export class NgbdModalContent {
   @Input() name;
 
-  constructor(public activeModal: NgbActiveModal) {}
+  constructor(public activeModal: NgbActiveModal) {
+  }
 
   chartOptions: EChartsOption = {
     xAxis: {
@@ -47,63 +50,51 @@ export class NgbdModalContent {
 }
 
 
-
-
-export interface Messung {
-  name: string;
-  ort: string;
-  laenge: number;
-  messer: string;
-}
-
 @Component({
   selector: 'app-root',
   templateUrl: './datenbestand.component.html',
   styleUrls: ['./datenbestand.component.css']
 })
-export class DatenbestandComponent {
-  title = 'Datenbestand';
-  dbHandler: DBHandlerApiService;
-  tables: Messung[] = [
-    {
-    name: 'table1', ort: 'Pfronten', laenge: 9.17, messer: 'Mustermann'
-     },
-    {
-      name: 'table2', ort: 'Füssen', laenge: 9.17, messer: 'Mustermann'
-    },
-    {
-      name: 'table3', ort: 'München', laenge: 9.17, messer: 'Mustermann'
-    },
-    {
-      name: 'table4', ort: 'Hamburg', laenge: 9.17, messer: 'Mustermann'
-    },
-    {
-      name: 'table5', ort: 'Berlin', laenge: 9.17, messer: 'Mustermann'
-    },
-    {
-      name: 'table6', ort: 'Schwangau', laenge: 9.17, messer: 'Mustermann'
-    }
-  ];
-  selectedTableValues: Messwert[];
-  constructor(dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private modalService: NgbModal, private library: FaIconLibrary) {
+export class DatenbestandComponent implements OnInit {
+
+  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private modalService: NgbModal, private library: FaIconLibrary, private titleService: Title) {
     library.addIcons(faEye);
+    this.titleService.setTitle('APS - Datenbestand');
   }
+
+  title = 'Datenbestand';
+  tables: any[] = [];
+  selectedTableValues: Messwert[];
+
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
 
-  getExistingTables(): Messung[] {
-    this.dbHandler.getAllTables().subscribe(data => {
-        this.tables = data;
-        return data;
+  ngOnInit(): void {
+    this.getExistingTables();
+  }
+
+  getExistingTables() {
+    return this.dbHandler.getAllTables().subscribe(data => {
+      for (let i = 0; i < data.length; i++) {
+         this.tables.push({
+         measurement: data[i][0], place: data[i][1], distance: 12, user: data[i][2]
+          });
+        }
+      }, err => {
+      console.log(err);
+      this.tables.push({
+        measurement: '1', place: '2', distance: 12, user: '3'
       });
-    return this.tables;
+      }
+
+    );
   }
 
   openTable(tableName: string) {
     return this.dbHandler.getTable(tableName).subscribe(data => {
-      this.selectedTableValues = data;
-      console.log(data);
-      return data;
-    },
+        this.selectedTableValues = data;
+        console.log(data);
+        return data;
+      },
       error => {
         console.log(error);
       });

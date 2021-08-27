@@ -1,11 +1,10 @@
-
 @media only screen and (max-width: 415px) and (orientation: portrait) {
   #hochformat {
     display: flex !important;
     position: center;
     margin-right: auto;
     margin-left: auto;
-    z-index:100;
+    z-index: 100;
     border-radius: 20px;
     width: 80%;
   }
@@ -14,31 +13,113 @@
   }
 }
 
-@media only screen and (max-height: 415px) and (orientation:landscape)  {
+@media only screen and (max-height: 415px) and (orientation: landscape) {
   #querformat {
     display: block !important;
   }
- header {
-   display: none;
- }
+  header {
+    display: none;
+  }
+  .custom-container {
+    margin-top: 0px;
+  }
+  .container {
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+  .jumbotron {
+    height: 100% !important;
+    width: 100% !important;
+    margin-top: 10px;
+  }
+  .custom-chart {
+    max-height: 300px;
+  }
+
+  #chartRow {
+    max-height: 90%;
+    margin-top: -60px;
+  }
+
+  #btnRow {
+    max-height: 10%;
+    margin-top: -60px;
+  }
 }
 
 
-#col1 {
-  grid-template-rows: 1fr 1fr 1fr;
+.custom-chart {
+  height: 400px;
 }
 
-.btn-danger:after {
-  content: 'Messung stoppen';
+.btn-chart-custom {
+  border-radius: 50%;
+  border: none;
+  padding: 2em;
+  width: 108px;
+  height: 108px;
+  position: relative;
+  margin: 0 auto;
 }
 
-.btn-success:after {
-  content: 'Messung starten';
+.btn-chart-custom:before {
+  border-radius: 50%;
+  background: none;
+  border: 2px solid #fff;
+  content: "";
+  display: block;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  pointer-events: none;
+  align-items: center;
+  justify-content: center;
 }
 
- .custom-chart {
-   height: 400px;
- }
+.btn-start-custom {
+  background-color: #39c459;
+}
 
- .btn {
- }
+.btn-stop-custom {
+  background-color: #b33730;
+}
+
+.btn-pause-custom {
+  background-color: #d0870a;
+}
+
+.custom-row {
+  width: 80%;
+  margin-left: 10%;
+  margin-right: auto;
+}
+
+.input-group {
+  margin-bottom: 0px;
+}
+
+mwl-gauge {
+  margin-top: -20px;
+  width: 150px;
+  height: 90px;
+  display: block;
+  padding: 10px;
+}
+mwl-gauge > .gauge > .dial {
+  stroke: #eee;
+  stroke-width: 2;
+  fill: rgba(0, 0, 0, 0);
+}
+mwl-gauge > .gauge > .value {
+  stroke: rgb(47, 227, 255);
+  stroke-width: 2;
+  fill: rgba(0, 0, 0, 0);
+}
+mwl-gauge > .gauge > .value-text {
+  fill: rgb(47, 227, 255);
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1em;
+}
