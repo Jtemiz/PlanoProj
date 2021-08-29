@@ -2,10 +2,10 @@ import logging
 import traceback
 import pymysql.cursors
 from dbutils.persistent_db import PersistentDB
-from flask import Flask
+from flask import Flask #
 from flask_cors import CORS, cross_origin
-from flask_restful import Api, Resource, reqparse
-import threading
+from flask_restful import Api, Resource, reqparse #
+import threading #
 import socketserver
 import socket
 import os
@@ -30,7 +30,7 @@ ARD_UDP_PORT_SEND = 5100
 
 # connection to mysql database
 db_config = {
-  'host': '192.168.178.153',
+  'host': '192.168.4.1',
   'user': 'messmodul',
   'password': 'Jockel01.',
   'database': 'MESSDATEN',
@@ -340,4 +340,4 @@ api.add_resource(SystemApi, '/update')
 
 # TODO adapt IP to productionMode
 if __name__ == '__main__':
-  app.run(debug=False, host='192.168.178.153', port=5000)
+  app.run(debug=False, host='192.168.4.1', port=5000)
