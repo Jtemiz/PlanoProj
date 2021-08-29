@@ -78,15 +78,16 @@ class MeasurementDatabaseApi(Resource):
   # used for the Chart to show all new Values
   # Inserts the requested data into the database-table 'tableName'
   def get(self):
+    global VALUES
     try:
-      global VALUES
-      vals = VALUES
-      VALUES = []
-      print("Get angekommen")
-      cnx = mysql_connection_pool.connection()
-      cursor = cnx.cursor()
-      sql = "INSERT INTO %s (`position`, HOEHE) VALUES (%s, %s)"
-      cursor.executemany(sql, (TABLENAME, vals))
+      if (len(VALUES) != 0):
+        print("Get angekommen")
+        vals = VALUES
+        VALUES = []
+        cnx = mysql_connection_pool.connection()
+        cursor = cnx.cursor()
+        sql = "INSERT INTO %s (`position`, HOEHE) VALUES (%s, %s)"
+        cursor.executemany(sql, (TABLENAME, vals))
       return vals, 200
     except Exception as ex:
       logging.error("MeasurementDatabaseApi.get(): " + str(ex) + "\n" + traceback.format_exc())
