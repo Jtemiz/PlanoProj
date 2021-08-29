@@ -15,7 +15,7 @@ export class DBHandlerApiService {
   }
 
   // TODO: change IP adress to real Production IP
-  private apiURL = 'http://192.168.178.153:5000/';
+  private apiURL = 'http://192.168.4.1:5000/';
 
   /**
    * Sends a request to the API to set an comment on an specific position of the measurement.
