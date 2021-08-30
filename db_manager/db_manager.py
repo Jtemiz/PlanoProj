@@ -61,7 +61,12 @@ metaDataParser.add_argument('place', type=str, required=False)
 metaDataParser.add_argument('distance', type=float, required=True, help='distance required')
 metaDataParser.add_argument('user', type=str, required=False)
 
-
+# ARD-Messages
+ARD_Start = b"070"
+ARD_Stop = b"071"
+ARD_Kali = b"072"
+ARD_StartReset = b"073"
+ARD_SDRead = b"074"
 
 # TODO no longer in use
 # RPi.GPIO setup
@@ -79,6 +84,7 @@ class MeasurementDatabaseApi(Resource):
   # Inserts the requested data into the database-table 'tableName'
   def get(self):
     global VALUES
+    vals = []
     try:
       if (len(VALUES) != 0):
         print("Get angekommen")
@@ -90,6 +96,7 @@ class MeasurementDatabaseApi(Resource):
         cursor.executemany(sql, (TABLENAME, vals))
       return vals, 200
     except Exception as ex:
+      print(ex)
       logging.error("MeasurementDatabaseApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
@@ -107,6 +114,7 @@ class MeasurementDatabaseApi(Resource):
       print("comment geadded")
       return 'Comment loaded into comments', 200
     except Exception as ex:
+      print(ex)
       if ("Duplicate entry" in str(ex)):
         try:
           args = commentParser.parse_args()
@@ -156,14 +164,14 @@ class MeasurementStartApi(Resource):
       MEASUREMENT_IS_ACTIVE = True
     # Arduino on
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-      sock.sendto(b"070", (ARD_UDP_IP_RECEIVE, ARD_UDP_PORT_SEND))
-      print("Arduino gestartet")
+      sock.sendto(ARD_StartReset, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
+      print("arduino gestartet, Kilometer zurückgesetzt")
       sock.close()
     # UDP-Receiver on
       SUDPServer.start_server()
     # Light on
      # GPIO.output(OUTPUT_PIN, GPIO.HIGH)
-      return "arduino gestartet", 200
+      return "arduino gestartet, Kilometer zurückgesetzt", 200
     except Exception as ex:
       logging.error("MeasurementStartApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
@@ -194,10 +202,9 @@ class MeasurementStopApi(Resource):
   def get(self):
     try:
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-      sock.sendto(b"073", (ARD_UDP_IP_RECEIVE, ARD_UDP_PORT_SEND))
-      print("Arduino: Kilometer resettet")
+      sock.sendto(ARD_Stop, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
       sock.close()
-      return "Arduino: Kilometer resettet", 200
+      return "Arduino: Messung gestoppt, Kilometerstand beibehalten", 200
     except Exception as ex:
       logging.error("MeasurementStopApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
@@ -289,7 +296,7 @@ class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
 
 # This class provides a multithreaded UDP server that can receive messages sent to the defined ip and port
 class UDPServer(threading.Thread):
-  server_address = (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND)
+  server_address = (ARD_UDP_IP_RECEIVE, ARD_UDP_PORT_RECEIVE)
   udp_server_object = None
 
   def run(self):
