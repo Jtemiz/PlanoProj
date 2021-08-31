@@ -2,10 +2,10 @@ import logging
 import traceback
 import pymysql.cursors
 from dbutils.persistent_db import PersistentDB
-from flask import Flask #
+from flask import Flask
 from flask_cors import CORS, cross_origin
 from flask_restful import Api, Resource, reqparse #
-import threading #
+import threading
 import socketserver
 import socket
 import os
@@ -22,7 +22,6 @@ MEASUREMENT_IS_ACTIVE = False
 TABLENAME = ''
 
 # UDP-Connection to the Arduino
-udpServer = None
 ARD_UDP_IP_RECEIVE = "192.168.4.2"
 ARD_UDP_PORT_RECEIVE = 9000
 ARD_UDP_IP_SEND = "192.168.4.1"
@@ -67,14 +66,6 @@ ARD_Stop = b"071"
 ARD_Kali = b"072"
 ARD_StartReset = b"073"
 ARD_SDRead = b"074"
-
-# TODO no longer in use
-# RPi.GPIO setup
-#GPIO.setwarnings(False)
-#GPIO.setmode(GPIO.BCM)
-#OUTPUT_PIN = 23
-#GPIO.setup(OUTPUT_PIN, GPIO.OUT)
-
 
 # Contains GET for send new Values to the Frontend and insert them in right database-table
 # Contains PUT for setting Comments in the Database while Measuring
@@ -152,7 +143,6 @@ class MeasurementTableApi(Resource):
       return 'Verbindungsfehler', 500
 
 
-# TODO GPIO no longer in use
 # Class for Starting the Measurement
 # Contains get for sending the name of the Database-Table of the current Measurement to the Arduino
 # Contains put for sending the name of the current Measurement from the Frontend to the API
@@ -169,8 +159,6 @@ class MeasurementStartApi(Resource):
       sock.close()
     # UDP-Receiver on
       SUDPServer.start_server()
-    # Light on
-     # GPIO.output(OUTPUT_PIN, GPIO.HIGH)
       return "arduino gestartet, Kilometer zurückgesetzt", 200
     except Exception as ex:
       logging.error("MeasurementStartApi.get(): " + str(ex) + "\n" + traceback.format_exc())
@@ -196,7 +184,6 @@ class MeasurementStartApi(Resource):
       return 'Verbindungsfehler', 500
 
 # TODO reset Position-Counter in Arduino (in MeasurementStartApi or here?)
-# TODO GPIO no longer in use
 # Contains GET for sending stop-signal from Frontend to the API and Arduino
 class MeasurementStopApi(Resource):
   def get(self):
@@ -204,6 +191,7 @@ class MeasurementStopApi(Resource):
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       sock.sendto(ARD_Stop, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
       sock.close()
+      print()
       return "Arduino: Messung gestoppt, Kilometerstand beibehalten", 200
     except Exception as ex:
       logging.error("MeasurementStopApi.get(): " + str(ex) + "\n" + traceback.format_exc())
@@ -221,8 +209,6 @@ class MeasurementStopApi(Resource):
     #  sock.sendto(b"071", (ARD_UDP_IP, ARD_UDP_PORT))
      # print("Arduino gestoppt")
      # sock.close()
-    # Light out
-     # GPIO.output(OUTPUT_PIN, GPIO.LOW)
     # add MetaData to Table
       print("start inserting")
       args = metaDataParser.parse_args()
@@ -275,20 +261,19 @@ class SystemApi(Resource):
 
 
 # TODO: Implement methode that checks if all measured data were received (Counter)
-# TODO: Add speed-Value
 # This class is a subclass of the DatagramRequestHandler and overrides the handle method
 class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
   def handle(self):
     message = self.rfile.readline().strip().decode('UTF-8')
     print(message)
     global VALUES
-    typeDataSplit = message.split("%")
+    typeDataSplit = message.split(";")
     if typeDataSplit[0] == "MES":
-      dataSplit = typeDataSplit[1].split("/")
       data = {
       "type": typeDataSplit[0],
-      "position": dataSplit[0],
-      "height": dataSplit[1].split("$")[0]
+      "position": typeDataSplit[1],
+      "height": typeDataSplit[2],
+      "speed": typeDataSplit[4]
       }
       print(data)
       VALUES.append(data)
@@ -304,15 +289,15 @@ class UDPServer(threading.Thread):
       self.udp_server_object = socketserver.ThreadingUDPServer(self.server_address, MyUDPRequestHandler)
       self.udp_server_object.serve_forever()
       print("Server gestartet")
-    except:
-      pass
+    except Exception as ex:
+      print(ex)
 
   def stop(self):
     try:
       self.udp_server_object.shutdown()
       print("UDP server shutdown")
-    except:
-      pass
+    except Exception as ex:
+      print(ex)
 
 
 class SUDPServer():
