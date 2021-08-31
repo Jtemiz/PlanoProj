@@ -290,6 +290,7 @@ class UDPServer(threading.Thread):
       self.udp_server_object.serve_forever()
       print("Server gestartet")
     except Exception as ex:
+      logging.error("MeasurementStopApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       print(ex)
 
   def stop(self):
@@ -297,6 +298,7 @@ class UDPServer(threading.Thread):
       self.udp_server_object.shutdown()
       print("UDP server shutdown")
     except Exception as ex:
+      logging.error("MeasurementStopApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       print(ex)
 
 
