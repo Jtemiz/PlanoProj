@@ -36,10 +36,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   public isCollapsed = true;
 
   ngOnInit(): void {
-
-    //if (this.runningMeasuring) {
-    //  this.data = JSON.parse(localStorage.getItem('CurrentMeasurementValues'));
-    // }
+    this.data = [];
     // initialize chart options:
     this.options = {
       tooltip: {

@@ -7,8 +7,6 @@ import {RouterModule, Routes} from '@angular/router';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {GaugeModule} from 'angular-gauge';
-import {RouteReuseStrategy} from '@angular/router';
-import {RouteReuseService} from './RouteReuseService';
 // Pages
 import {ChartComponent} from './sites/chart/chart.component';
 import {DashboardComponent} from './sites/Dashboard/dashboard.component';
@@ -81,10 +79,6 @@ const appRoutes: Routes = [
     ],
   providers: [
     ApiLoggerService, {
-      provide: RouteReuseStrategy,
-      useClass: RouteReuseService
-    },
-    {
       provide: ErrorHandler,
       useClass: CustomErrorHandlerService
     },
