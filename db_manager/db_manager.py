@@ -82,9 +82,9 @@ class MeasurementDatabaseApi(Resource):
         vals = VALUES
         VALUES = []
 #        cnx = mysql_connection_pool.connection()
- #       cursor = cnx.cursor()
-       # sql = "INSERT INTO %s (POSITION, HOEHE) VALUES (%s, %s)" %TABLENAME
-  #      cursor.executemany("INSERT INTO %s (POSITION, HOEHE) VALUES (%s, %s)" %TABLENAME, (vals))
+#        cursor = cnx.cursor()
+#        sql = "INSERT INTO %s (POSITION, HOEHE) VALUES (%s, %s)" %TABLENAME
+#        cursor.executemany("INSERT INTO %s (POSITION, HOEHE) VALUES (%s, %s)" %TABLENAME, (vals))
       return vals, 200
     except Exception as ex:
       print(ex)
