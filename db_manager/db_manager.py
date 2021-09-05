@@ -22,14 +22,14 @@ MEASUREMENT_IS_ACTIVE = False
 TABLENAME = ''
 
 # UDP-Connection to the Arduino
-ARD_UDP_IP_RECEIVE = "192.168.4.2"
-ARD_UDP_PORT_RECEIVE = 9000
-ARD_UDP_IP_SEND = "192.168.4.1"
-ARD_UDP_PORT_SEND = 5100
+ARD_UDP_IP_SEND = "192.168.5.2"
+ARD_UDP_PORT_SEND = 9000
+ARD_UDP_IP_RECEIVE = "192.168.5.1"
+ARD_UDP_PORT_RECEIVE = 5100
 
 # connection to mysql database
 db_config = {
-  'host': '192.168.4.1',
+  'host': '192.168.4.2',
   'user': 'messmodul',
   'password': 'Jockel01.',
   'database': 'MESSDATEN',
@@ -61,11 +61,11 @@ metaDataParser.add_argument('distance', type=float, required=True, help='distanc
 metaDataParser.add_argument('user', type=str, required=False)
 
 # ARD-Messages
-ARD_Start = b"070"
-ARD_Stop = b"071"
-ARD_Kali = b"072"
-ARD_StartReset = b"073"
-ARD_SDRead = b"074"
+ARD_Start = bytes("070", "ascii")
+ARD_Stop = bytes("071", "ascii")
+ARD_Kali = bytes("072", "ascii")
+ARD_StartReset = bytes("073", "ascii")
+ARD_SDRead = bytes("074", "ascii")
 
 # Contains GET for send new Values to the Frontend and insert them in right database-table
 # Contains PUT for setting Comments in the Database while Measuring
@@ -81,10 +81,10 @@ class MeasurementDatabaseApi(Resource):
         print("Get angekommen")
         vals = VALUES
         VALUES = []
-        cnx = mysql_connection_pool.connection()
-        cursor = cnx.cursor()
-        sql = "INSERT INTO %s (`position`, HOEHE) VALUES (%s, %s)"
-        cursor.executemany(sql, (TABLENAME, vals))
+#        cnx = mysql_connection_pool.connection()
+ #       cursor = cnx.cursor()
+       # sql = "INSERT INTO %s (POSITION, HOEHE) VALUES (%s, %s)" %TABLENAME
+  #      cursor.executemany("INSERT INTO %s (POSITION, HOEHE) VALUES (%s, %s)" %TABLENAME, (vals))
       return vals, 200
     except Exception as ex:
       print(ex)
@@ -191,9 +191,9 @@ class MeasurementStopApi(Resource):
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       sock.sendto(ARD_Stop, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
       sock.close()
-      print()
       return "Arduino: Messung gestoppt, Kilometerstand beibehalten", 200
     except Exception as ex:
+      print(ex)
       logging.error("MeasurementStopApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
@@ -205,10 +205,9 @@ class MeasurementStopApi(Resource):
     # stop receiving Values
       SUDPServer.stop_server()
     # stop Arduino
-     # sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    #  sock.sendto(b"071", (ARD_UDP_IP, ARD_UDP_PORT))
-     # print("Arduino gestoppt")
-     # sock.close()
+      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+      sock.sendto(ARD_Stop, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
+      sock.close()
     # add MetaData to Table
       print("start inserting")
       args = metaDataParser.parse_args()
@@ -265,17 +264,15 @@ class SystemApi(Resource):
 class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
   def handle(self):
     message = self.rfile.readline().strip().decode('UTF-8')
-    print(message)
     global VALUES
-    typeDataSplit = message.split(";")
-    if typeDataSplit[0] == "MES":
+    if "STAT" not in message:
+      typeDataSplit = message.split(";")
       data = {
-      "type": typeDataSplit[0],
-      "position": typeDataSplit[1],
-      "height": typeDataSplit[2],
-      "speed": typeDataSplit[4]
+      "index": int(typeDataSplit[0]),
+      "position": float(typeDataSplit[1]),
+      "height": float(typeDataSplit[2]),
+      "speed": float(typeDataSplit[3])
       }
-      print(data)
       VALUES.append(data)
 
 
@@ -335,4 +332,4 @@ api.add_resource(SystemApi, '/update')
 
 # TODO adapt IP to productionMode
 if __name__ == '__main__':
-  app.run(debug=False, host='192.168.4.1', port=5000)
+  app.run(debug=False, host='192.168.4.2', port=5000)

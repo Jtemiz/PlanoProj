@@ -1,7 +1,8 @@
 export interface Messwert {
-  type: string;
+  index: number; 
   position: number;
   height: number;
+  speed: number;
 }
 
 export interface Metadata {

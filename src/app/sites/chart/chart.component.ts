@@ -92,7 +92,6 @@ export class ChartComponent implements OnInit, OnDestroy {
     this.timer = setInterval(() => {
       if (this.runningMeasuring && !this.pausedMeasuring) {
         this.getValues();
-        this.currentSpeed = Math.floor(Math.random() * (180 + 1));
       }
 
       // update series data:
@@ -101,7 +100,7 @@ export class ChartComponent implements OnInit, OnDestroy {
           data: this.data,
         }]
       };
-    }, 10000);
+    }, 200);
   }
 
   ngOnDestroy() {
@@ -121,6 +120,7 @@ export class ChartComponent implements OnInit, OnDestroy {
         this.data.push({
           name: data[i].position + ': ' + data[i].height, value: [data[i].position, data[i].height]
         });
+        this.currentSpeed = data[i].speed;
       }
     });
   }
@@ -135,6 +135,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   startMeasuring() {
+    this.data = [];
     this.runningMeasuring = true;
     localStorage.setItem('MeasurementActive', 'true');
     this.dbHandler.createTable();
