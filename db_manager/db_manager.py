@@ -1,14 +1,17 @@
 import logging
+import time
 import traceback
 import pymysql.cursors
 from dbutils.persistent_db import PersistentDB
-from flask import Flask
+from flask import Flask, Response
 from flask_cors import CORS, cross_origin
 from flask_restful import Api, Resource, reqparse #
 import threading
 import socketserver
 import socket
 import os
+import random
+import json
 
 app = Flask(__name__)
 VALUES = []
@@ -258,7 +261,34 @@ class SystemApi(Resource):
       logging.error("SystemApi.get: " + str(ex) + "\n" + traceback.format_exc())
       return 'Update konnte nicht durchgeführt werden', 500
 
-
+class StreamApi(Resource):
+  def get(self):
+    global VALUES
+    try:
+      VALUES = [{
+      'index': random.uniform(1, 1000),
+      'position': random.uniform(1.0, 1000.0),
+      'height': random.uniform(1.0, 1000.0),
+      'speed': random.uniform(1.0, 1000.0)
+      },
+      {
+      "index": random.uniform(1, 1000),
+      "position": random.uniform(1.0, 1000.0),
+      "height": random.uniform(1.0, 1000.0),
+      "speed": random.uniform(1.0, 1000.0)
+      }]
+      def eventStream():
+        while True:
+          time.sleep(0.2)
+          if len(VALUES) != 0:
+            data = json.dumps(VALUES)
+            #VALUES = []
+            yield f"data: {data}\n\n"
+      print(next(eventStream()))
+      return Response(eventStream(), mimetype='text/event-stream')
+    except Exception as ex:
+      logging.error('StreamApi.get: ' + str(ex) + '/n' + traceback.format_exc())
+      print(str(ex))
 # TODO: Implement methode that checks if all measured data were received (Counter)
 # This class is a subclass of the DatagramRequestHandler and overrides the handle method
 class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
@@ -322,6 +352,7 @@ class SUDPServer():
 
 # this adds our resources to the api
 # we define what resource we want to add and which path we would like to use
+api.add_resource(StreamApi, '/stream')
 api.add_resource(MeasurementDatabaseApi, '/measurement')
 api.add_resource(MeasurementTableApi, '/tables')
 api.add_resource(MeasurementStartApi, '/start')
@@ -332,4 +363,4 @@ api.add_resource(SystemApi, '/update')
 
 # TODO adapt IP to productionMode
 if __name__ == '__main__':
-  app.run(debug=False, host='192.168.4.2', port=5000)
+  app.run(debug=False, port=5000)

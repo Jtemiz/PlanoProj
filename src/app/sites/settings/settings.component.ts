@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import {DarkModeService} from 'angular-dark-mode';
 import {Observable} from 'rxjs';
-import {DBHandlerApiService} from '../../services/db-handler-api.service';
+import {DBHandlerApiService} from '../../services/db_handler/db-handler-api.service';
 import { Title } from '@angular/platform-browser';
 
 @Component({

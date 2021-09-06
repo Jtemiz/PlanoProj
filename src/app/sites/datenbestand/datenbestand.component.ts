@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {DBHandlerApiService} from '../../services/db-handler-api.service';
+import {DBHandlerApiService} from '../../services/db_handler/db-handler-api.service';
 import {DarkModeService} from 'angular-dark-mode';
 import {Observable} from 'rxjs';
 import {Messwert} from '../../Messwert';

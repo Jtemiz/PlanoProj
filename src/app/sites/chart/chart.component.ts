@@ -1,22 +1,24 @@
 import {Component, OnInit, OnDestroy, Output, EventEmitter} from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {ConfigComponent} from '../../config/config.component';
-import {DBHandlerApiService} from '../../services/db-handler-api.service';
+import {DBHandlerApiService} from '../../services/db_handler/db-handler-api.service';
 import {DarkModeService} from 'angular-dark-mode';
 import {Title} from '@angular/platform-browser';
 import {AlertService} from '../../services/_alert';
 import {Messwert} from '../../Messwert';
+import {Sse} from '../../services/sse'
 
 
 @Component({
   selector: 'app-basic-update',
   templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.scss']
+  styleUrls: ['./chart.component.scss'],
+  providers: [Sse]
 })
 
 export class ChartComponent implements OnInit, OnDestroy {
 
-  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private titleService: Title, public alert: AlertService) {
+  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private titleService: Title, public alert: AlertService, public sse: Sse) {
     this.titleService.setTitle('APS - Messung');
   }
 
@@ -29,16 +31,17 @@ export class ChartComponent implements OnInit, OnDestroy {
   private data: any[];
   private timer: any;
   private config: ConfigComponent;
-  public comments: [] = JSON.parse(localStorage.getItem('comments'))
+  public comments: [] = JSON.parse(localStorage.getItem('comments'));
   public choosedComment;
   public choosedPosition = 10;
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
+  sseSubscription;
+
   public isCollapsed = true;
   public nCurrentPosition = 0
   private idles = [];
   public idlesComplete = 'nicht initialisiert';
   ngOnInit(): void {
-    this.data = [];
     // initialize chart options:
     this.options = {
       tooltip: {
@@ -90,7 +93,7 @@ export class ChartComponent implements OnInit, OnDestroy {
     // Mock dynamic data:
     this.timer = setInterval(() => {
       if (this.runningMeasuring && !this.pausedMeasuring) {
-        this.getValues();
+        //this.getValues();
       }
 
       // update series data:
@@ -100,6 +103,16 @@ export class ChartComponent implements OnInit, OnDestroy {
         }]
       };
     }, 200);
+
+    this.sseSubscription = this.sse.observe(this.dbHandler.apiURL + 'stream').subscribe(data => {
+      for (let i = 0; i < data.length; i++) {
+        console.log(data[i]);
+        this.data.push({
+          name: data[i].position + ': ' + data[i].height, value: [data[i].position, data[i].height]
+        });
+        this.currentSpeed = data[i].speed;
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -110,6 +123,7 @@ export class ChartComponent implements OnInit, OnDestroy {
       clearInterval(this.timer);
       localStorage.removeItem('CurrentMeasurementValues');
     }
+    this.sseSubscription.unsubscribe();
   }
 
 
@@ -136,7 +150,6 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   startMeasuring() {
-    this.data = [];
     this.runningMeasuring = true;
     localStorage.setItem('MeasurementActive', 'true');
     this.dbHandler.createTable();
@@ -151,18 +164,6 @@ export class ChartComponent implements OnInit, OnDestroy {
     localStorage.setItem('MeasurementActive', 'false');
     this.dbHandler.stopArduino('Place', 12.518, 'Joel Temiz');
     console.log('Messung gestoppt');
-  }
-
-  setComment(str: string, at: number) {
-    this.dbHandler.setComment(str, at).subscribe(data => {
-        console.log(data);
-        this.storeCommentInLocalStorage(str);
-        this.choosedComment = '';
-      },
-      err => {
-        console.log(err);
-        return this.alert.error('Fehler in der Datenbank-Verbindung: Kommentar konnte nicht hinzugefügt werden.');
-      });
   }
 
   changePauseMeasuring() {
@@ -185,6 +186,18 @@ export class ChartComponent implements OnInit, OnDestroy {
     localStorage.setItem('PauseActive', 'false');
     this.dbHandler.startArduino();
     console.log('Messung fortgesetzt');
+  }
+
+  setComment(str: string, at: number) {
+    this.dbHandler.setComment(str, at).subscribe(data => {
+        console.log(data);
+        this.storeCommentInLocalStorage(str);
+        this.choosedComment = '';
+      },
+      err => {
+        console.log(err);
+        return this.alert.error('Fehler in der Datenbank-Verbindung: Kommentar konnte nicht hinzugefügt werden.');
+      });
   }
 
   storeCommentInLocalStorage(value) {
@@ -210,7 +223,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   public checkIdles(){
     let tmp: number = 0;
     for (let i; i < this.idles.length; i++){
-      if (this.idles[i] == tmp + 1)  { 
+      if (this.idles[i] == tmp + 1)  {
         tmp = this.idles[i];
       } else {
         return this.idlesComplete='false';
