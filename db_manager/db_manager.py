@@ -24,6 +24,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 MEASUREMENT_IS_ACTIVE = False
 TABLENAME = ''
 
+
 # UDP-Connection to the Arduino
 ARD_UDP_IP_SEND = "192.168.5.2"
 ARD_UDP_PORT_SEND = 9000
@@ -151,10 +152,11 @@ class MeasurementTableApi(Resource):
 # Contains put for sending the name of the current Measurement from the Frontend to the API
 class MeasurementStartApi(Resource):
   def get(self):
+    global MEASUREMENT_IS_ACTIVE
+    MEASUREMENT_IS_ACTIVE = True
     try:
     # Set boolean True
-      global MEASUREMENT_IS_ACTIVE
-      MEASUREMENT_IS_ACTIVE = True
+
     # Arduino on
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       sock.sendto(ARD_StartReset, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
@@ -201,10 +203,11 @@ class MeasurementStopApi(Resource):
       return 'Verbindungsfehler', 500
 
   def put(self):
+    global MEASUREMENT_IS_ACTIVE
+    MEASUREMENT_IS_ACTIVE = False
     try:
     # set boolean false
-      global MEASUREMENT_IS_ACTIVE
-      MEASUREMENT_IS_ACTIVE = False
+
     # stop receiving Values
       SUDPServer.stop_server()
     # stop Arduino
@@ -262,29 +265,26 @@ class SystemApi(Resource):
       return 'Update konnte nicht durchgeführt werden', 500
 
 class StreamApi(Resource):
+  index = 0
   def get(self):
     global VALUES
     try:
-      VALUES = [{
-      'index': random.uniform(1, 1000),
-      'position': random.uniform(1.0, 1000.0),
-      'height': random.uniform(1.0, 1000.0),
-      'speed': random.uniform(1.0, 1000.0)
-      },
-      {
-      "index": random.uniform(1, 1000),
-      "position": random.uniform(1.0, 1000.0),
-      "height": random.uniform(1.0, 1000.0),
-      "speed": random.uniform(1.0, 1000.0)
-      }]
       def eventStream():
         while True:
-          time.sleep(0.2)
-          if len(VALUES) != 0:
-            data = json.dumps(VALUES)
-            #VALUES = []
-            yield f"data: {data}\n\n"
-      print(next(eventStream()))
+          if MEASUREMENT_IS_ACTIVE:
+            self.index += 1
+            VALUES = [{
+              'index': self.index,
+              'position': self.index,
+              'height': self.index,
+              'speed': self.index
+            }]
+            time.sleep(0.05)
+            if len(VALUES) != 0:
+              data = json.dumps(VALUES)
+              #VALUES = []
+              yield f"data: {data}\n\n"
+          else: time.sleep(2)
       return Response(eventStream(), mimetype='text/event-stream')
     except Exception as ex:
       logging.error('StreamApi.get: ' + str(ex) + '/n' + traceback.format_exc())

@@ -6,19 +6,18 @@ import {DarkModeService} from 'angular-dark-mode';
 import {Title} from '@angular/platform-browser';
 import {AlertService} from '../../services/_alert';
 import {Messwert} from '../../Messwert';
-import {Sse} from '../../services/sse'
+import {SseService} from '../../services/SseService/sse.service';
 
 
 @Component({
   selector: 'app-basic-update',
   templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.scss'],
-  providers: [Sse]
+  styleUrls: ['./chart.component.scss']
 })
 
 export class ChartComponent implements OnInit, OnDestroy {
 
-  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private titleService: Title, public alert: AlertService, public sse: Sse) {
+  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private titleService: Title, public alert: AlertService, private sseService: SseService) {
     this.titleService.setTitle('APS - Messung');
   }
 
@@ -28,20 +27,35 @@ export class ChartComponent implements OnInit, OnDestroy {
   options: any;
   updateOptions: any;
   // x-Axis
-  private data: any[];
+  private data = [];
   private timer: any;
   private config: ConfigComponent;
   public comments: [] = JSON.parse(localStorage.getItem('comments'));
   public choosedComment;
   public choosedPosition = 10;
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
-  sseSubscription;
 
   public isCollapsed = true;
-  public nCurrentPosition = 0
+  public nCurrentPosition = 0;
   private idles = [];
   public idlesComplete = 'nicht initialisiert';
+
   ngOnInit(): void {
+    //start SSE-Service
+    this.sseService
+      .getServerSentEvent(this.dbHandler.apiURL + 'stream')
+      .subscribe(data => {
+        let tmp = JSON.parse(data.data);
+          for (let i = 0; i < tmp.length; i++) {
+            this.data.push({
+              name: tmp[i].position + ': ' + tmp[i].height, value: [tmp[i].position, tmp[i].height]
+            });
+            this.currentSpeed = tmp[i].speed;
+            this.nCurrentPosition = tmp[i].position;
+            this.idles.push(tmp[i].index);
+          }
+        }
+      );
     // initialize chart options:
     this.options = {
       tooltip: {
@@ -102,18 +116,9 @@ export class ChartComponent implements OnInit, OnDestroy {
           data: this.data,
         }]
       };
-    }, 200);
-
-    this.sseSubscription = this.sse.observe(this.dbHandler.apiURL + 'stream').subscribe(data => {
-      for (let i = 0; i < data.length; i++) {
-        console.log(data[i]);
-        this.data.push({
-          name: data[i].position + ': ' + data[i].height, value: [data[i].position, data[i].height]
-        });
-        this.currentSpeed = data[i].speed;
-      }
-    });
+    }, 50);
   }
+
 
   ngOnDestroy() {
     if (this.runningMeasuring) {
@@ -123,7 +128,6 @@ export class ChartComponent implements OnInit, OnDestroy {
       clearInterval(this.timer);
       localStorage.removeItem('CurrentMeasurementValues');
     }
-    this.sseSubscription.unsubscribe();
   }
 
 
@@ -220,16 +224,15 @@ export class ChartComponent implements OnInit, OnDestroy {
     this.comments = JSON.parse(localStorage.getItem('comments'));
   }
 
-  public checkIdles(){
+  public checkIdles() {
     let tmp: number = 0;
-    for (let i; i < this.idles.length; i++){
-      if (this.idles[i] == tmp + 1)  {
+    for (let i = 0; i < this.idles.length; i++) {
+      if (this.idles[i] == tmp + 1) {
         tmp = this.idles[i];
       } else {
-        return this.idlesComplete='false';
+        return this.idlesComplete = 'false';
       }
     }
     return this.idlesComplete = 'true';
   }
 }
-
