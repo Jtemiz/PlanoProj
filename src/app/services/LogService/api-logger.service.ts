@@ -1,11 +1,12 @@
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
+import {DBHandlerApiService} from '../db_handler/db-handler-api.service';
 
 @Injectable()
 export class ApiLoggerService {
-  location = 'http://192.168.4.1:5000/errorlogger';
-  constructor(  private http: HttpClient) {
+  constructor(  private http: HttpClient, public DBHandler: DBHandlerApiService) {
   }
+  location = this.DBHandler.apiURL + 'errorlogger';
   log(entry) {
     const httpOptions = {
       headers: new HttpHeaders({

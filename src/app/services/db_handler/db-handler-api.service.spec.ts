@@ -1,17 +1,20 @@
 import { TestBed } from '@angular/core/testing';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import { ApiLoggerService } from './api-logger.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { DBHandlerApiService } from './db-handler-api.service';
 
 describe('ApiLoggerService', () => {
-  let service: ApiLoggerService;
+  let service: DBHandlerApiService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule
+      ],
+      providers: [
+        DBHandlerApiService
       ]
     });
-    service = TestBed.inject(ApiLoggerService);
+    service = TestBed.inject(DBHandlerApiService);
   });
 
   it('should be created', () => {

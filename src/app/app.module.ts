@@ -78,6 +78,7 @@ const appRoutes: Routes = [
 
     ],
   providers: [
+    HttpClientModule,
     ApiLoggerService, {
       provide: ErrorHandler,
       useClass: CustomErrorHandlerService
