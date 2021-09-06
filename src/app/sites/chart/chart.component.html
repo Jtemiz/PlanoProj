@@ -30,10 +30,11 @@
             Pause
           </button>
         </div>
+      
         <div class="col-6" id="GaugeCommentCol">
           <mwl-gauge
             [min]="0"
-            [max]="100"
+            [max]="180"
             [dialStartAngle]="0"
             [dialEndAngle]="180"
             [value]=currentSpeed
@@ -51,13 +52,15 @@
             <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="setComment(choosedComment, 50)"><img
               src="assets/chat-right-quote-fill.svg"></button>
           </div>
+          <div class="PosDiv">{{nCurrentPosition}}</div>
         </div>
       </div>
-      <h1>{{choosedComment}}</h1>
     </div>
     <img id="hochformat" src="assets/rotatePhone.gif" style="display: none"/>
   </div>
+  <h1>{{idlesComplete}}</h1>
 </div>
+<button (click)="checkIdles()">check Idles</button>
 </body>
 <app-dark-mode style="display: none"></app-dark-mode>
 </html>

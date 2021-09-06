@@ -34,7 +34,9 @@ export class ChartComponent implements OnInit, OnDestroy {
   public choosedPosition = 10;
   darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
   public isCollapsed = true;
-
+  public nCurrentPosition = 0
+  private idles = [];
+  public idlesComplete = 'nicht initialisiert';
   ngOnInit(): void {
     this.data = [];
     // initialize chart options:
@@ -111,13 +113,15 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
 
-  getValues(): Messwert[] {
+  getValues() {
     return this.dbHandler.getNewValues().subscribe(data => {
       for (let i = 0; i < data.length; i++) {
         this.data.push({
           name: data[i].position + ': ' + data[i].height, value: [data[i].position, data[i].height]
         });
         this.currentSpeed = data[i].speed;
+        this.nCurrentPosition = data[i].position;
+        this.idles.push(data[i].index);
       }
     });
   }
@@ -201,6 +205,18 @@ export class ChartComponent implements OnInit, OnDestroy {
     existingEntries.push(entry);
     localStorage.setItem('comments', JSON.stringify(existingEntries));
     this.comments = JSON.parse(localStorage.getItem('comments'));
+  }
+
+  public checkIdles(){
+    let tmp: number = 0;
+    for (let i; i < this.idles.length; i++){
+      if (this.idles[i] == tmp + 1)  { 
+        tmp = this.idles[i];
+      } else {
+        return this.idlesComplete='false';
+      }
+    }
+    return this.idlesComplete = 'true';
   }
 }
 
