@@ -7,36 +7,40 @@ import {Title} from '@angular/platform-browser';
 import {AlertService} from '../../services/_alert';
 import {Messwert} from '../../Messwert';
 import {SseService} from '../../services/SseService/sse.service';
+import {FaIconLibrary} from '@fortawesome/angular-fontawesome';
+import {faRoad} from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
-  selector: 'app-basic-update',
+  selector: 'chartComp',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss']
 })
 
 export class ChartComponent implements OnInit, OnDestroy {
 
-  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private titleService: Title, public alert: AlertService, private sseService: SseService) {
+  constructor(private dbHandler: DBHandlerApiService, private darkModeService: DarkModeService, private titleService: Title, public alert: AlertService, private sseService: SseService, private library: FaIconLibrary) {
     this.titleService.setTitle('APS - Messung');
+    library.addIcons(faRoad);
+
   }
 
+  darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
   runningMeasuring = (localStorage.getItem('MeasurementActive') === 'true');
   pausedMeasuring: boolean = (localStorage.getItem('PauseActive') === 'true');
-  currentSpeed = 0;
   options: any;
   updateOptions: any;
-  // x-Axis
-  private data = [];
+
   private timer: any;
   private config: ConfigComponent;
   public comments: [] = JSON.parse(localStorage.getItem('comments'));
-  public choosedComment;
-  public choosedPosition = 10;
-  darkMode$: Observable<boolean> = this.darkModeService.darkMode$;
-
+  public quickCommentBtns = JSON.parse(localStorage.getItem('comBtn'));
   public isCollapsed = true;
+  public choosedPosition = 0;
+  public choosedComment;
+  private data = [];
   public nCurrentPosition = 0;
+  public currentSpeed = 10;
   private idles = [];
   public idlesComplete = 'nicht initialisiert';
 
@@ -166,7 +170,7 @@ export class ChartComponent implements OnInit, OnDestroy {
     localStorage.setItem('PauseActive', 'false');
     this.runningMeasuring = false;
     localStorage.setItem('MeasurementActive', 'false');
-    this.dbHandler.stopArduino('Place', 12.518, 'Joel Temiz');
+    this.dbHandler.stopArduino('Place', this.nCurrentPosition, 'Joel Temiz');
     console.log('Messung gestoppt');
   }
 

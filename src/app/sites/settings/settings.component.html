@@ -31,12 +31,12 @@
         <th>
           <p>
             <button type="button" class="btn btn-outline-primary" (click)="collapse.toggle()"
-                    [attr.aria-expanded]="!isCollapsed"
+                    [attr.aria-expanded]="!isCollapsedUpdate"
                     aria-controls="collapseExample">
               Information zum Update
             </button>
           </p>
-          <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
+          <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsedUpdate">
             <div class="card-body">
               <h2>Voraussetzung:</h2>
               Internetverbindung via Ethernet-Leitung
@@ -59,8 +59,50 @@
           </div>
         </th>
       </tr>
+      <tr>
+        <th>
+          Kommentare
+        </th>
+        <th>
+          <button type="button" class="btn btn-outline-primary" (click)="isCollapsedQuickCom = !isCollapsedQuickCom"
+                  [attr.aria-expanded]="!isCollapsedQuickCom"
+                  aria-controls="collapseExample">
+            Schnellkommentare bearbeiten
+          </button>
+          <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsedQuickCom">
+            <div class="card-body">
+              <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+                <div class="example-box" *ngFor="let btn of comBtns" cdkDrag>
+                  {{btn.comment}}
+                  <button style="border: none; background: none" (click)="deleteQuickCommentBtn(btn.comment)">
+                    <fa-icon [icon]="['far', 'minus-square']"></fa-icon>
+                  </button>
+                </div>
+              </div>
+              <div class="input-group mb-3">
+                <input [(ngModel)]="newComment" class="form-control" list="datalistOptions" id="commentInput"
+                       placeholder="Kommentar" (keyup.enter)="addQuickCommentBtn(newComment)">
+                <datalist id="datalistOptions">
+                  <ng-container *ngFor="let comment of freeComs; let i=index">
+                    <option value="{{comment.comment}}">
+                  </ng-container>
+                </datalist>
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                        (click)="addQuickCommentBtn(freeComs)"><img
+                  src="assets/chat-right-quote-fill.svg"></button>
+              </div>
+            </div>
+          </div>
+        </th>
+        <th>
+          <button type="button" class="btn btn-outline-primary" (click)="deleteFreeComments()">
+            Schnellkommentare bearbeiten
+          </button>
+        </th>
+      </tr>
     </table>
   </div>
+
 </div>
 </body>
 </html>

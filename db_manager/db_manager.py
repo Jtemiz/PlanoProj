@@ -5,13 +5,14 @@ import pymysql.cursors
 from dbutils.persistent_db import PersistentDB
 from flask import Flask, Response
 from flask_cors import CORS, cross_origin
-from flask_restful import Api, Resource, reqparse #
+from flask_restful import Api, Resource, reqparse  #
 import threading
 import socketserver
 import socket
 import os
 import random
 import json
+import csv
 
 app = Flask(__name__)
 VALUES = []
@@ -22,14 +23,15 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 MEASUREMENT_IS_ACTIVE = False
-TABLENAME = ''
-
+TABLENAME = 'not initialized'
 
 # UDP-Connection to the Arduino
 ARD_UDP_IP_SEND = "192.168.5.2"
 ARD_UDP_PORT_SEND = 9000
 ARD_UDP_IP_RECEIVE = "192.168.5.1"
 ARD_UDP_PORT_RECEIVE = 5100
+
+CSV_URL = '/var/www/html/csvTables/'
 
 # connection to mysql database
 db_config = {
@@ -71,10 +73,12 @@ ARD_Kali = bytes("072", "ascii")
 ARD_StartReset = bytes("073", "ascii")
 ARD_SDRead = bytes("074", "ascii")
 
+
 # Contains GET for send new Values to the Frontend and insert them in right database-table
 # Contains PUT for setting Comments in the Database while Measuring
 class MeasurementDatabaseApi(Resource):
   # TODO check if executemany works
+  # TODO Datenbank anpassen
   # used for the Chart to show all new Values
   # Inserts the requested data into the database-table 'tableName'
   def get(self):
@@ -85,10 +89,13 @@ class MeasurementDatabaseApi(Resource):
         print("Get angekommen")
         vals = VALUES
         VALUES = []
-#        cnx = mysql_connection_pool.connection()
-#        cursor = cnx.cursor()
-#        sql = "INSERT INTO %s (POSITION, HOEHE) VALUES (%s, %s)" %TABLENAME
-#        cursor.executemany("INSERT INTO %s (POSITION, HOEHE) VALUES (%s, %s)" %TABLENAME, (vals))
+        insertvals = []
+        for entry in vals:
+          insertvals.append(*entry.values())
+        cnx = mysql_connection_pool.connection()
+        cursor = cnx.cursor()
+        sql = "INSERT INTO %s (INDEX, POSITION, HOEHE, GESCHWINDIGKEIT) VALUES (%s, %s)" %TABLENAME
+        cursor.executemany(sql, insertvals)
       return vals, 200
     except Exception as ex:
       print(ex)
@@ -155,14 +162,14 @@ class MeasurementStartApi(Resource):
     global MEASUREMENT_IS_ACTIVE
     MEASUREMENT_IS_ACTIVE = True
     try:
-    # Set boolean True
+      # Set boolean True
 
-    # Arduino on
+      # Arduino on
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       sock.sendto(ARD_StartReset, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
       print("arduino gestartet, Kilometer zurückgesetzt")
       sock.close()
-    # UDP-Receiver on
+      # UDP-Receiver on
       SUDPServer.start_server()
       return "arduino gestartet, Kilometer zurückgesetzt", 200
     except Exception as ex:
@@ -174,7 +181,11 @@ class MeasurementStartApi(Resource):
     args = tableCreateParser.parse_args()
     global TABLENAME
     try:
-    # Create new SqlTable
+      # TABLENAME = args['tableName']
+      # f = open(CSV_URL + TABLENAME)
+      # writer = csv.writer(f)
+      # writer.writerow(['Position', 'Heigth', 'Speed'])
+      # Create new SqlTable
       cnx = mysql_connection_pool.connection()
       cursor = cnx.cursor()
       sql = "CREATE TABLE `%s` LIKE `ExampleTable`;"
@@ -187,6 +198,7 @@ class MeasurementStartApi(Resource):
       print(ex)
       logging.error("MeasurementStartApi.put(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
+
 
 # TODO reset Position-Counter in Arduino (in MeasurementStartApi or here?)
 # Contains GET for sending stop-signal from Frontend to the API and Arduino
@@ -206,15 +218,15 @@ class MeasurementStopApi(Resource):
     global MEASUREMENT_IS_ACTIVE
     MEASUREMENT_IS_ACTIVE = False
     try:
-    # set boolean false
+      # set boolean false
 
-    # stop receiving Values
+      # stop receiving Values
       SUDPServer.stop_server()
-    # stop Arduino
+      # stop Arduino
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       sock.sendto(ARD_Stop, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
       sock.close()
-    # add MetaData to Table
+      # add MetaData to Table
       print("start inserting")
       args = metaDataParser.parse_args()
       cnx = mysql_connection_pool.connection()
@@ -240,6 +252,7 @@ class MeasurementStatusApi(Resource):
       logging.error("MeasurementStatusApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
+
 # used for receiving Exceptions from Frontend
 class AngularErrorLoggerApi(Resource):
   # receives Exections from Angular-Frontend and loggs them to db_manager.log
@@ -253,9 +266,10 @@ class AngularErrorLoggerApi(Resource):
       logging.error("AngularErrorLoggerApi.get(): " + str(ex) + "\n" + traceback.format_exc())
       return 'Verbindungsfehler', 500
 
+
 # used for starting updates
 class SystemApi(Resource):
-  #starts local shell-script to update the API & Frontend
+  # starts local shell-script to update the API & Frontend
   def get(self):
     try:
       os.system("/var/www/html/update.sh")
@@ -264,8 +278,10 @@ class SystemApi(Resource):
       logging.error("SystemApi.get: " + str(ex) + "\n" + traceback.format_exc())
       return 'Update konnte nicht durchgeführt werden', 500
 
+
 class StreamApi(Resource):
   index = 0
+
   def get(self):
     global VALUES
     try:
@@ -282,13 +298,16 @@ class StreamApi(Resource):
             time.sleep(0.05)
             if len(VALUES) != 0:
               data = json.dumps(VALUES)
-              #VALUES = []
+              # VALUES = []
               yield f"data: {data}\n\n"
-          else: time.sleep(2)
+          else:
+            time.sleep(2)
       return Response(eventStream(), mimetype='text/event-stream')
     except Exception as ex:
       logging.error('StreamApi.get: ' + str(ex) + '/n' + traceback.format_exc())
       print(str(ex))
+
+
 # TODO: Implement methode that checks if all measured data were received (Counter)
 # This class is a subclass of the DatagramRequestHandler and overrides the handle method
 class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
@@ -298,10 +317,10 @@ class MyUDPRequestHandler(socketserver.DatagramRequestHandler):
     if "STAT" not in message:
       typeDataSplit = message.split(";")
       data = {
-      "index": int(typeDataSplit[0]),
-      "position": float(typeDataSplit[1]),
-      "height": float(typeDataSplit[2]),
-      "speed": float(typeDataSplit[3])
+        "index": int(typeDataSplit[0]),
+        "position": float(typeDataSplit[1]),
+        "height": float(typeDataSplit[2]),
+        "speed": float(typeDataSplit[3])
       }
       VALUES.append(data)
 

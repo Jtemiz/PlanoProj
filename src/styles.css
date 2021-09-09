@@ -38,13 +38,10 @@ body {
 }
 
 .custom-container {
-  margin-top: 120px;
   min-height: 90%;
 }
 .jumbotron {
-  max-height: 90%;
-  padding: 2rem 1rem;
-  margin-bottom: 2rem;
+  margin-top: 10%;
   background-color: #e9ecef;
   border-radius: .3rem;
 }

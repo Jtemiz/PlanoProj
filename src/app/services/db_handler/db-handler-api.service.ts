@@ -91,7 +91,7 @@ export class DBHandlerApiService {
    * @TODO
    */
   getTable(tableName: string) {
-    return this.http.get<Messwert[]>(this.apiURL + 'datenbestand/' + tableName)
+    return this.http.get<Messwert[]>(this.apiURL + 'datenbestand/' + tableName);
   }
 
   isMActive() {

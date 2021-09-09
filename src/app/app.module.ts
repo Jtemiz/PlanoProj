@@ -22,6 +22,9 @@ import {CustomErrorHandlerService} from './services/LogService/log.service';
 import {ApiLoggerService} from './services/LogService/api-logger.service';
 import { AlertModule } from './services/_alert';
 import {FormsModule} from '@angular/forms';
+import {KtdGridModule} from '@katoid/angular-grid-layout';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 const appRoutes: Routes = [
   {
@@ -56,27 +59,30 @@ const appRoutes: Routes = [
     DarkModeComponent,
     NgbdModalContent,
   ],
-    imports: [
-        NgbCollapseModule,
-        GaugeModule.forRoot(),
-        FontAwesomeModule,
-        FlexLayoutModule,
-        BrowserModule,
-        HttpClientModule,
-        NgxEchartsModule.forRoot({
-            echarts: () => import('echarts'),
-        }),
-        RouterModule.forRoot(
-            appRoutes,
-            {enableTracing: false} // <-- debugging purposes only
-        ),
-        NgbModule,
-        BrowserAnimationsModule,
-        FontAwesomeModule,
-        AlertModule,
-        FormsModule
+  imports: [
+    NgbCollapseModule,
+    GaugeModule.forRoot(),
+    FontAwesomeModule,
+    FlexLayoutModule,
+    BrowserModule,
+    HttpClientModule,
+    NgxEchartsModule.forRoot({
+      echarts: () => import('echarts'),
+    }),
+    RouterModule.forRoot(
+      appRoutes,
+      {enableTracing: false} // <-- debugging purposes only
+    ),
+    NgbModule,
+    BrowserAnimationsModule,
+    FontAwesomeModule,
+    AlertModule,
+    FormsModule,
+    KtdGridModule,
+    DragDropModule,
+    MatGridListModule
 
-    ],
+  ],
   providers: [
     HttpClientModule,
     ApiLoggerService, {

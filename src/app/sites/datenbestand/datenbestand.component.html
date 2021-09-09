@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <title>Datenbestand</title>
 </head>
-<alert></alert>
 <body style="background: none">
 
 
 <div class='container custom-container'>
   <div class="jumbotron" [ngClass]="(darkMode$ | async)? 'text-white, bg-dark': 'text-dark, bg-white'">
-<table class="table table-striped">
+<table class="table table-striped" [ngClass]="(darkMode$ | async)? 'table-dark': ''" >
   <thead>
   <tr>
     <th scope="col">#</th>
@@ -18,7 +17,7 @@
     <th scope="col">Messort</th>
     <th scope="col">Mess-Distanz</th>
     <th scope="col">Durchführender</th>
-
+    <th scope="col">Anzeigen </th>
   </tr>
   </thead>
   <tbody>
@@ -38,16 +37,12 @@
     </td>
     <td>
       <button class="btn" (click)="open(tables[i].measurement)"><fa-icon [icon]="['far', 'eye']"></fa-icon></button>
-
-
-      <!--<button class="btn" (click)="openTable(table.name)">-->
     </td>
   </tr>
   </tbody>
 </table>
   </div>
 </div>
-<button (click)="getExistingTables()">Testbutton</button>
 </body>
 <app-dark-mode style="display: none"></app-dark-mode>
 </html>

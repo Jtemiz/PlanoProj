@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {DBHandlerApiService} from '../../services/db_handler/db-handler-api.service';
 import {DarkModeService} from 'angular-dark-mode';
 import {Observable} from 'rxjs';
@@ -26,32 +26,51 @@ import {Title} from '@angular/platform-browser';
 
   `
 })
-export class NgbdModalContent {
+export class NgbdModalContent implements OnInit, OnDestroy {
   @Input() name;
 
-  constructor(public activeModal: NgbActiveModal) {
+  constructor(public activeModal: NgbActiveModal, private DBHandler: DBHandlerApiService) {
   }
 
-  chartOptions: EChartsOption = {
-    xAxis: {
-      type: 'category',
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [
-      {
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
-        type: 'line',
+  data: any[] = [];
+  chartOptions: EChartsOption;
+
+  ngOnInit() {
+    this.chartOptions = {
+      xAxis: {
+        type: 'value',
       },
-    ],
-  };
+      yAxis: {
+        type: 'value',
+      },
+      series: [
+        {
+          data: this.data,
+          type: 'line',
+        },
+      ],
+    };
+
+    this.DBHandler.getTable(this.name).subscribe(data => {
+        const tmp = JSON.parse(data.data);
+        for (let i = 0; i < tmp.length; i++) {
+          this.data.push({
+            name: tmp[i].position + ': ' + tmp[i].height, value: [tmp[i].position, tmp[i].height]
+          });
+        }
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    this.data = [];
+  }
+
 }
 
 
 @Component({
-  selector: 'app-root',
+  selector: 'dataComp',
   templateUrl: './datenbestand.component.html',
   styleUrls: ['./datenbestand.component.css']
 })
@@ -74,18 +93,17 @@ export class DatenbestandComponent implements OnInit {
 
   getExistingTables() {
     return this.dbHandler.getAllTables().subscribe(data => {
-      for (let i = 0; i < data.length; i++) {
-         this.tables.push({
-         measurement: data[i][0], place: data[i][1], distance: 12, user: data[i][2]
+        for (let i = 0; i < data.length; i++) {
+          this.tables.push({
+            measurement: data[i][0], place: data[i][1], distance: 12, user: data[i][2]
           });
         }
       }, err => {
-      console.log(err);
-      this.tables.push({
-        measurement: '1', place: '2', distance: 12, user: '3'
-      });
+        console.log(err);
+        this.tables.push({
+          measurement: '1', place: '2', distance: 12, user: '3'
+        });
       }
-
     );
   }
 

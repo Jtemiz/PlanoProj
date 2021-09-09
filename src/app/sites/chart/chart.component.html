@@ -8,33 +8,114 @@
 <div class='container custom-container'>
   <div class="jumbotron jumbotron-fluid" [ngClass]="(darkMode$ | async)? 'text-white, bg-dark': 'text-dark, bg-white'">
     <div class="content container">
-      <div class="row" id="chartRow">
-        <div class="col">
-          <div echarts [options]="options" [merge]="updateOptions" class="demo-chart custom-chart"></div>
-        </div>
-      </div>
-      <div class="row" id="btnRow">
-        <div class="col-3">
-          <button class="btn btn-success btn-lg" *ngIf="!runningMeasuring"
-                  (click)="changeRunningMeasuring()">
-            Start
-          </button>
+
+      <!--
+            <div class="row" id="btnRow">
+              <div class="col-3">
+                <button class="btn btn-success btn-lg" *ngIf="!runningMeasuring"
+                        (click)="changeRunningMeasuring()">
+                  Start
+                </button>
+                <button class="btn btn-danger btn-lg" *ngIf="runningMeasuring"
+                        (click)="changeRunningMeasuring()">
+                  Stop
+                </button>
+
+                <button type="button" class="btn btn-warning btn-lg" *ngIf="runningMeasuring"
+                        (click)="changePauseMeasuring()">
+                  Pause
+                </button>
+
+                <button class="btn btn-lg btn-info" (click)="checkIdles()">check Idles</button>
+                <h1>{{idlesComplete}}</h1>
+              </div>
+              <div class="col-6" id="GaugeCommentCol">
+                <mwl-gauge
+                  [min]="0"
+                  [max]="20"
+                  [dialStartAngle]="0"
+                  [dialEndAngle]="180"
+                  [value]=currentSpeed
+                  [animated]="true"
+                  [animationDuration]="1"
+                  *ngIf="runningMeasuring"
+                ></mwl-gauge>
+                <div class="input-group mb-3" id="CommentGroup" *ngIf="runningMeasuring">
+                  <input [(ngModel)]="choosedComment" class="form-control" list="datalistOptions" id="commentInput"
+                         placeholder="Kommentar" (keyup.enter)="setComment(choosedComment, 50)">
+                  <datalist id="datalistOptions">
+                    <ng-container *ngFor="let comment of comments; let i=index">
+                      <option value="{{comment.comment}}">
+                    </ng-container>
+                  </datalist>
+                  <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                          (click)="setComment(choosedComment, 50)"><img
+                    src="assets/chat-right-quote-fill.svg"></button>
+                </div>
+              </div>
+            </div>
+                  -->
+      <mat-grid-list cols="8" rowHeight="100px" style="margin-left: 50px; margin-right: 50px">
+        <mat-grid-tile
+          [colspan]="7"
+          [rowspan]="5">
+          <div class="row" id="chartRow">
+            <div class="col" style="min-width: 1000px">
+              <div echarts [options]="options" [merge]="updateOptions" class="demo-chart custom-chart"></div>
+            </div>
+          </div>
+        </mat-grid-tile>
+
+        <mat-grid-tile
+          [colspan]="1"
+          [rowspan]="1"
+          *ngFor="let comBtn of quickCommentBtns" class="btn-group">
+            <button type="button" class="btn btn-info" (click)="setComment(comBtn.comment, 50)" style="width: 80%" *ngIf="runningMeasuring">
+              {{comBtn.comment}} <img
+              src="assets/chat-right-quote-fill.svg" style="float: right;"></button>
+        </mat-grid-tile>
+        <mat-grid-tile
+          [colspan]="1"
+          [rowspan]="1">
+          <div class="btn-group-vertical">
+            <button class="btn btn-success btn-lg" *ngIf="!runningMeasuring"
+                    (click)="changeRunningMeasuring()">
+              Start
+            </button>
             <button class="btn btn-danger btn-lg" *ngIf="runningMeasuring"
                     (click)="changeRunningMeasuring()">
               Stop
             </button>
-        </div>
-        <div class="col-3">
-          <button type="button" class="btn btn-warning btn-lg" *ngIf="runningMeasuring"
-                  (click)="changePauseMeasuring()">
-            Pause
-          </button>
-        </div>
-      
-        <div class="col-6" id="GaugeCommentCol">
+            <button type="button" class="btn btn-warning btn-lg" *ngIf="runningMeasuring"
+                    (click)="changePauseMeasuring()">
+              Pause
+            </button>
+          </div>
+        </mat-grid-tile>
+
+        <mat-grid-tile
+          [colspan]="2"
+          [rowspan]="1">
+          <div class="input-group mb-3" id="CommentGroup" *ngIf="runningMeasuring">
+            <input [(ngModel)]="choosedComment" class="form-control" list="datalistOptions" id="commentInput"
+                   placeholder="Kommentar" (keyup.enter)="setComment(choosedComment, 50)">
+            <datalist id="datalistOptions">
+              <ng-container *ngFor="let comment of comments; let i=index">
+                <option value="{{comment.comment}}">
+              </ng-container>
+            </datalist>
+            <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                    (click)="setComment(choosedComment, 50)"><img
+              src="assets/chat-right-quote-fill.svg"></button>
+          </div>
+        </mat-grid-tile>
+
+        <mat-grid-tile
+          [colspan]="2"
+          [rowspan]="1">
           <mwl-gauge
             [min]="0"
-            [max]="180"
+            [max]="20"
             [dialStartAngle]="0"
             [dialEndAngle]="180"
             [value]=currentSpeed
@@ -42,28 +123,33 @@
             [animationDuration]="1"
             *ngIf="runningMeasuring"
           ></mwl-gauge>
-          <div class="input-group mb-3" id="CommentGroup" *ngIf="runningMeasuring">
-            <input [(ngModel)]="choosedComment" class="form-control" list="datalistOptions" id="commentInput" placeholder="Kommentar" (keyup.enter)="setComment(choosedComment, 50)">
-            <datalist id="datalistOptions">
-              <ng-container *ngFor="let comment of comments; let i=index">
-                <option value="{{comment.comment}}">
-              </ng-container>
-            </datalist>
-            <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="setComment(choosedComment, 50)"><img
-              src="assets/chat-right-quote-fill.svg"></button>
+          <div class="PosDiv" *ngIf="runningMeasuring">
+            {{nCurrentPosition}} km
           </div>
-          <div class="PosDiv">{{nCurrentPosition}}</div>
-        </div>
-      </div>
+        </mat-grid-tile>
+        <mat-grid-tile
+          [colspan]="2"
+          [rowspan]="1">
+
+        </mat-grid-tile>
+
+      </mat-grid-list>
     </div>
     <img id="hochformat" src="assets/rotatePhone.gif" style="display: none"/>
   </div>
-  <h1>{{idlesComplete}}</h1>
+
 </div>
-<button (click)="checkIdles()">check Idles</button>
 </body>
 <app-dark-mode style="display: none"></app-dark-mode>
 </html>
+
+
+<mat-grid-tile
+  [colspan]="2"
+  [rowspan]="1">
+  <button class="btn btn-lg btn-info" (click)="checkIdles()">check Idles</button>
+  <h1>{{idlesComplete}}</h1>
+</mat-grid-tile>
 
 
 
