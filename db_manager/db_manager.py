@@ -10,9 +10,7 @@ import threading
 import socketserver
 import socket
 import os
-import random
 import json
-import csv
 
 app = Flask(__name__)
 VALUES = []
@@ -66,6 +64,7 @@ metaDataParser.add_argument('place', type=str, required=False)
 metaDataParser.add_argument('distance', type=float, required=True, help='distance required')
 metaDataParser.add_argument('user', type=str, required=False)
 
+
 # ARD-Messages
 ARD_Start = bytes("070", "ascii")
 ARD_Stop = bytes("071", "ascii")
@@ -81,26 +80,6 @@ class MeasurementDatabaseApi(Resource):
   # TODO Datenbank anpassen
   # used for the Chart to show all new Values
   # Inserts the requested data into the database-table 'tableName'
-  def get(self):
-    global VALUES
-    vals = []
-    try:
-      if (len(VALUES) != 0):
-        print("Get angekommen")
-        vals = VALUES
-        VALUES = []
-        insertvals = []
-        for entry in vals:
-          insertvals.append(*entry.values())
-        cnx = mysql_connection_pool.connection()
-        cursor = cnx.cursor()
-        sql = "INSERT INTO %s (INDEX, POSITION, HOEHE, GESCHWINDIGKEIT) VALUES (%s, %s)" %TABLENAME
-        cursor.executemany(sql, insertvals)
-      return vals, 200
-    except Exception as ex:
-      print(ex)
-      logging.error("MeasurementDatabaseApi.get(): " + str(ex) + "\n" + traceback.format_exc())
-      return 'Verbindungsfehler', 500
 
   # used while the Measurement for adding comments on the database
   def put(self):
@@ -138,7 +117,6 @@ class MeasurementTableApi(Resource):
   # used for "Datenbestand" to show all avaiable Data-Tables
   def get(self):
     try:
-      print('TableApi')
       cnx = mysql_connection_pool.connection()
       cursor = cnx.cursor()
       sql = "SELECT * FROM `metadata` ORDER BY `measurement`"
@@ -146,69 +124,97 @@ class MeasurementTableApi(Resource):
       result = cursor.fetchall()
       cursor.close()
       cnx.close()
-      print(result)
       return result, 200
     except Exception as ex:
       print('ErrorTableApi')
       logging.error("MeasurementTableApi.get(): " + str(ex) + "\n" + traceback.format_exc())
-      return 'Verbindungsfehler', 500
+      return 'Konnte Tabellenübersicht nicht zurückgeben', 500
 
+  def put(self):
+    try:
+      args = tableCreateParser.parse_args()
+      tn = args['tableName']
+      cnx = mysql_connection_pool.connection()
+      cursor = cnx.cursor()
+      sql = "SELECT * FROM `%s`"
+      cursor.execute(sql, tn)
+      header = ['index', 'pos', 'height', 'speed']
+      result = list(cursor.fetchall())
+      print(result)
+      #cursor.close()
+      #cnx.close()
+      #f = open(str(tn) + '.csv', 'w')
+      #for (ind, pos, hi, speed) in result:
+      #  f.write(str(ind) + '; ' + str(pos) + '; ' + str(hi) + '; ' + str(speed) + '\n')
+      #f.close()
+      #print('file written')
+      return result, 200
+    except Exception as ex:
+      print(str(ex))
+      logging.error("MeasurementTableApi.pu(): " + str(ex) + "\n" + traceback.format_exc())
+      return 'Konnte keine Tabelle zurückgeben', 500
 
+  def export(table_name, rows, header):
+    # Create csv file
+    f = open(str(table_name) + '.csv', 'w')
+    # Write header
+    f.write(','.join(header) + '\n')
+    for ind, pos, hi, speed in rows:
+      f.write(ind + '; ' + pos + '; ' + hi + '; ' + speed + '\n')
+    f.close()
+    print(str(len(rows)) + ' rows written successfully to ' + f.name)
+    return f
 # Class for Starting the Measurement
 # Contains get for sending the name of the Database-Table of the current Measurement to the Arduino
 # Contains put for sending the name of the current Measurement from the Frontend to the API
 class MeasurementStartApi(Resource):
   def get(self):
+    startTime = time.process_time()
     global MEASUREMENT_IS_ACTIVE
     MEASUREMENT_IS_ACTIVE = True
     try:
-      # Set boolean True
-
+      # UDP-Receiver on
+      SUDPServer.start_server()
       # Arduino on
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       sock.sendto(ARD_StartReset, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
-      print("arduino gestartet, Kilometer zurückgesetzt")
       sock.close()
-      # UDP-Receiver on
-      SUDPServer.start_server()
-      return "arduino gestartet, Kilometer zurückgesetzt", 200
+      return 'StartApi_Get takes ' + str(time.process_time() - startTime), 200
     except Exception as ex:
       logging.error("MeasurementStartApi.get(): " + str(ex) + "\n" + traceback.format_exc())
-      return 'Verbindungsfehler', 500
+      return 'Fehler beim Starten des Arduinos oder des Werte-Empfangmoduls der API', 500
 
   # used for getting the tableName from the Frontend to the API and create a new table in the Database named "TABLENAME"
   def put(self):
-    args = tableCreateParser.parse_args()
+    startTime = time.process_time()
     global TABLENAME
     try:
-      # TABLENAME = args['tableName']
-      # f = open(CSV_URL + TABLENAME)
-      # writer = csv.writer(f)
-      # writer.writerow(['Position', 'Heigth', 'Speed'])
-      # Create new SqlTable
+      args = tableCreateParser.parse_args()
       cnx = mysql_connection_pool.connection()
       cursor = cnx.cursor()
       sql = "CREATE TABLE `%s` LIKE `ExampleTable`;"
       cursor.execute(sql, (args['tableName']))
+      cnx.commit()
       cursor.close()
       cnx.close()
       TABLENAME = args['tableName']
-      return args['tableName'], 200
+      return 'StartApi_Put takes ' + str(time.process_time() - startTime), 200
     except Exception as ex:
       print(ex)
       logging.error("MeasurementStartApi.put(): " + str(ex) + "\n" + traceback.format_exc())
-      return 'Verbindungsfehler', 500
+      return 'Fehler beim Erstellen der Messwerttabelle', 500
 
 
 # TODO reset Position-Counter in Arduino (in MeasurementStartApi or here?)
 # Contains GET for sending stop-signal from Frontend to the API and Arduino
 class MeasurementStopApi(Resource):
   def get(self):
+    startTime = time.process_time()
     try:
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       sock.sendto(ARD_Stop, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
       sock.close()
-      return "Arduino: Messung gestoppt, Kilometerstand beibehalten", 200
+      return 'StotApi_Get takes ' + str(time.process_time() - startTime), 200
     except Exception as ex:
       print(ex)
       logging.error("MeasurementStopApi.get(): " + str(ex) + "\n" + traceback.format_exc())
@@ -227,7 +233,6 @@ class MeasurementStopApi(Resource):
       sock.sendto(ARD_Stop, (ARD_UDP_IP_SEND, ARD_UDP_PORT_SEND))
       sock.close()
       # add MetaData to Table
-      print("start inserting")
       args = metaDataParser.parse_args()
       cnx = mysql_connection_pool.connection()
       cursor = cnx.cursor()
@@ -280,33 +285,46 @@ class SystemApi(Resource):
 
 
 class StreamApi(Resource):
-  index = 0
-
+  global VALUES
   def get(self):
     global VALUES
     try:
-      def eventStream():
-        while True:
-          if MEASUREMENT_IS_ACTIVE:
-            self.index += 1
-            VALUES = [{
-              'index': self.index,
-              'position': self.index,
-              'height': self.index,
-              'speed': self.index
-            }]
-            time.sleep(0.05)
-            if len(VALUES) != 0:
-              data = json.dumps(VALUES)
-              # VALUES = []
-              yield f"data: {data}\n\n"
-          else:
-            time.sleep(2)
-      return Response(eventStream(), mimetype='text/event-stream')
+      return Response(self.eventStream(), mimetype='text/event-stream')
     except Exception as ex:
       logging.error('StreamApi.get: ' + str(ex) + '/n' + traceback.format_exc())
       print(str(ex))
 
+  def eventStream(self):
+    global VALUES
+    while True:
+      if MEASUREMENT_IS_ACTIVE:
+        time.sleep(0.05)
+        if len(VALUES) != 0:
+          try:
+            self.sqlQuery()
+            tmp = VALUES
+            data = json.dumps(tmp)
+            del VALUES[:len(tmp)]
+            print(data)
+            yield f"data: {data}\n\n"
+          except Exception as ex:
+            print(ex)
+      else:
+        time.sleep(0.5)
+
+  def sqlQuery(self):
+    try:
+      SqlData = list([(i['index'], i['position'], i['height'], i['speed']) for i in VALUES])
+      cnx = mysql_connection_pool.connection()
+      cursor = cnx.cursor()
+      sql = "INSERT INTO `" +str(TABLENAME) + "` (IDX, POSITION, HOEHE, GESCHWINDIGKEIT) VALUES (%s, %s, %s, %s)"
+      cursor.executemany(sql, SqlData)
+      cnx.commit()
+      cursor.close()
+      cnx.close()
+    except Exception as ex:
+      logging.error('StreamApi.SqlQuery: ' + str(ex) + '/n' + traceback.format_exc())
+      print(str(ex))
 
 # TODO: Implement methode that checks if all measured data were received (Counter)
 # This class is a subclass of the DatagramRequestHandler and overrides the handle method
@@ -382,4 +400,5 @@ api.add_resource(SystemApi, '/update')
 
 # TODO adapt IP to productionMode
 if __name__ == '__main__':
-  app.run(debug=False, port=5000)
+  app.run(debug=False, host='192.168.4.2', port=5000)
+
